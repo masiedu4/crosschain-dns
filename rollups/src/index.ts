@@ -28,13 +28,8 @@ router.add<{ address: Address }>(
 function getPlayerProfile(address: Address) {
   const player = Leaderboard.getOrCreatePlayer(address);
 
-  const balance = JSON.stringify(wallet.getWallet(address), (_, v) =>
-    typeof v === "bigint" ? v.toString() : v
-  );
-
   return {
     gameHistory: player.getGameHistory(),
-    balance,
   };
 }
 
