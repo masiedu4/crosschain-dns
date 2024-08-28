@@ -30,6 +30,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 const Connected = ({ address }: { address: Address | undefined }) => {
   const { disconnect } = useDisconnect();
+  const { chain } = useAccount();
 
   const { isLoading, getProcessedGameHistory } = useUserProfileStore();
   const { toast } = useToast();
@@ -52,6 +53,8 @@ const Connected = ({ address }: { address: Address | undefined }) => {
         <div className="flex gap-2 items-center">
           <FaWallet className="text-white" />
           <span className="text-white ">{truncateAddress(address)}</span>
+          <span className="text-white ">|</span>
+          <span className="text-white ">{chain?.name}</span>
         </div>
         <Unlink
           onClick={() => disconnect()}
