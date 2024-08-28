@@ -38,9 +38,6 @@ const Navbar = () => {
           <DropdownMenuItem className="text-white px-4  hover:bg-primary-bg cursor-pointer ">
             Home
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-white px-4  hover:bg-primary-bg cursor-pointer">
-            Stake
-          </DropdownMenuItem>
           <DropdownMenuItem className=" text-white px-4 hover:bg-primary-bg cursor-pointer ">
             Feedback
           </DropdownMenuItem>
