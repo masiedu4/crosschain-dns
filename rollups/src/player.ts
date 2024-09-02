@@ -3,6 +3,7 @@ import { dictionary } from "./dictionary";
 import { Leaderboard } from "./leaderboard";
 
 export interface GameData {
+  type: string;
   game_id: number;
   scrambled_letters: string;
   timestamp: number;
@@ -78,6 +79,7 @@ export class Player {
       this.generateWordsAndScramble(duration);
 
     this.currentGame = {
+      type: "start_game",
       game_id,
       scrambled_letters,
       original_words: words,
@@ -99,6 +101,7 @@ export class Player {
     ); // 5 minutes in milliseconds
 
     return {
+      type: this.currentGame.type,
       game_id: this.currentGame.game_id,
       scrambled_letters: this.currentGame.scrambled_letters,
       timestamp: this.currentGame.timestamp,
@@ -136,6 +139,7 @@ export class Player {
     const totalPointsEarned = pointsEarned + bonusPointsEarned;
 
     this.currentGame.is_ended = true;
+    this.currentGame.type = 'end_game';
     this.currentGame.words_won = wordsWon;
     this.currentGame.bonus_words_won = bonusWordsWon;
     this.currentGame.points_earned = pointsEarned;

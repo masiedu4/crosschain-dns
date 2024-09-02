@@ -72,11 +72,11 @@ app.addAdvanceHandler(async (data) => {
         try {
           const payload = JSON.stringify(currentGame);
 
-          await app.createReport({
+          await app.createNotice({
             payload: stringToHex(payload),
           });
 
-          console.log("Report created successfully", payload);
+          console.log("Notice created successfully", payload);
         } catch (noticeError) {
           console.error("Error creating notice:", noticeError);
         }
@@ -87,10 +87,31 @@ app.addAdvanceHandler(async (data) => {
         const endGame = player.endGame(wordsSubmitted);
 
         try {
+          // update game state
           const gameStatistics = JSON.stringify(endGame);
+
+          // fetch leaderboard
+          const leaderboardPayload = {
+            type: "leaderboard",
+            data: Leaderboard.getLeaderboard,
+          };
+
+          // fetch game history
+          const gameHistory = {
+            type: "game_history",
+            data: player.getGameHistory(),
+          };
 
           await app.createNotice({
             payload: stringToHex(gameStatistics),
+          });
+
+          await app.createNotice({
+            payload: stringToHex(JSON.stringify(leaderboardPayload)),
+          });
+
+          await app.createNotice({
+            payload: stringToHex(JSON.stringify(gameHistory)),
           });
 
           console.log(
