@@ -43,10 +43,7 @@ interface NoticesResponse {
   };
 }
 
-
-export async function fetchNoticeByGameId(
-  gameId: number
-): Promise<GameResult | null> {
+export async function fetchNotices(): Promise<NoticesResponse | null> {
   try {
     const response = await fetch(graphQlServer, {
       method: "POST",
@@ -64,7 +61,27 @@ export async function fetchNoticeByGameId(
     }
 
     const result: NoticesResponse = await response.json();
-    const notices = result.data.notices.edges.map((edge) => edge.node);
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// fetch leaderboard notice
+
+// fetch 
+
+export async function fetchNoticeByGameId(
+  gameId: number
+): Promise<GameResult | null> {
+  try {
+    const result = await fetchNotices();
+    const notices = result?.data.notices.edges.map((edge) => edge.node);
+
+    if (!notices) {
+      return null; // If notices is undefined
+    }
 
     for (const notice of notices) {
       try {
