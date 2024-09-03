@@ -1,7 +1,7 @@
 import { gql } from "graphql-tag";
 import { Hex, hexToString } from "viem";
 import { graphQlServer } from "./config";
-import { GameResult } from "../lib/types";
+import { GameData, GameResult } from "../lib/types";
 
 export const NOTICES_QUERY = gql`
   query notices {
@@ -134,43 +134,62 @@ export async function fetchLatestLeaderboard(): Promise<any | null> {
 }
 
 // fetch most recent current game
-
 export async function fetchLatestStartGame(
   msgSender: string
-): Promise<any | null> {
+): Promise<GameData | null> {
   try {
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    const currentTime = Math.floor(Date.now() / 1000);
     const result = await fetchNotices();
     const notices = result?.data.notices.edges.map((edge) => edge.node);
 
-    if (!notices) {
+    if (!notices || notices.length === 0) {
       return null;
     }
 
-    let latestStartGame = null;
+    let latestStartGame: GameData | null = null;
     let latestTimestamp = 0;
+    const endedGameIds = new Set<number>();
 
+    // Gather all ended game IDs
+    for (const notice of notices) {
+      try {
+        const payloadJson = JSON.parse(hexToString(notice.payload));
+        if (payloadJson.type === "end_game") {
+          endedGameIds.add(payloadJson.game_id);
+        }
+      } catch (error) {
+        // Silently skip invalid payloads
+        continue;
+      }
+    }
+
+    // Find the latest start_game that hasn't ended
     for (const notice of notices) {
       const noticeTimestamp = parseInt(notice.input.timestamp);
-      if (
-        notice.input.msgSender === msgSender &&
-        noticeTimestamp <= currentTime &&
-        noticeTimestamp > latestTimestamp
-      ) {
+
+      if (noticeTimestamp <= currentTime && noticeTimestamp > latestTimestamp) {
         try {
           const payloadJson = JSON.parse(hexToString(notice.payload));
-          if (payloadJson.type === "start_game") {
+
+          if (
+            payloadJson.type === "start_game" &&
+            payloadJson.is_ended === false &&
+            !endedGameIds.has(payloadJson.game_id)
+          ) {
             latestStartGame = payloadJson;
             latestTimestamp = noticeTimestamp;
           }
         } catch (error) {
-          console.error("Error parsing payload:", error);
+          // Silently skip invalid payloads
+          continue;
         }
       }
     }
 
     return latestStartGame;
   } catch (error) {
+    // Log the error and rethrow
+    console.error("Error in fetchLatestStartGame:", error);
     throw error;
   }
 }

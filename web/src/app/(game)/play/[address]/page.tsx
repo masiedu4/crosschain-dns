@@ -1,6 +1,7 @@
 import { Address, hexToString } from "viem";
 import { inspect } from "@/data/inspect";
 import GameWrapper from "./(components)/GameWrapper";
+import { fetchLatestStartGame } from "@/data/query";
 
 export default async function Page({
   params,
@@ -8,36 +9,37 @@ export default async function Page({
   params: { address: string | Address };
 }) {
   try {
-    const response = await inspect(`current/${params.address}`);
+    // const response = await inspect(`current/${params.address}`);
 
-    if (!response.reports || response.reports.length === 0) {
+    const gameData = await fetchLatestStartGame(params.address)
+   
+    if (!gameData) {
       console.log("No game data available");
       return (
         <GameWrapper
           game_id={null}
           scrambled_letters={null}
           duration={null}
-          is_staked={null}
+      
         />
       );
     }
 
-    const gameData = hexToString(response.reports[0].payload);
-    const parsedGameData = JSON.parse(gameData);
+
 
     // Ensure all required fields are present
     if (
-      !parsedGameData.game_id ||
-      !parsedGameData.scrambled_letters ||
-      !parsedGameData.duration
+      !gameData.game_id ||
+      !gameData.scrambled_letters ||
+      !gameData.duration
     ) {
-      console.log("Incomplete game data", parsedGameData);
+      console.log("Incomplete game data", gameData);
       return (
         <GameWrapper
           game_id={null}
           scrambled_letters={null}
           duration={null}
-          is_staked={null}
+
         />
       );
     }
@@ -45,10 +47,9 @@ export default async function Page({
     return (
       <div>
         <GameWrapper
-          game_id={parsedGameData.game_id}
-          scrambled_letters={parsedGameData.scrambled_letters}
-          duration={parsedGameData.duration}
-          is_staked={parsedGameData.is_staked}
+          game_id={gameData.game_id}
+          scrambled_letters={gameData.scrambled_letters}
+          duration={gameData.duration}
         />
       </div>
     );
@@ -59,7 +60,7 @@ export default async function Page({
         game_id={null}
         scrambled_letters={null}
         duration={null}
-        is_staked={null}
+
       />
     );
   }

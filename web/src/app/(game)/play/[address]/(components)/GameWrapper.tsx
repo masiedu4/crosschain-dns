@@ -11,7 +11,7 @@ type GameDataNullable = {
   game_id: number | null;
   scrambled_letters: string | null;
   duration: number | null;
-  is_staked: boolean | null;
+
 };
 
 type GameData = {
@@ -25,7 +25,7 @@ const GameWrapper: React.FC<GameDataNullable> = ({
   game_id,
   scrambled_letters,
   duration,
-  is_staked,
+
   
 }) => {
   const router = useRouter();
@@ -35,14 +35,13 @@ const GameWrapper: React.FC<GameDataNullable> = ({
     game_id,
     scrambled_letters,
     duration,
-    is_staked
+
   };
 
   const isGameDataValid = (data: GameDataNullable): data is GameData => {
     return data.game_id !== null && 
            data.scrambled_letters !== null && 
-           data.duration !== null && 
-           data.is_staked !== null;
+           data.duration !== null 
   };
 
   const GameRules = ({ is_staked }: { is_staked: boolean }) => {

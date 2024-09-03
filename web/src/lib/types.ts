@@ -8,6 +8,7 @@ export interface InspectOutput {
 }
 
 export interface GameData {
+  type:string,
   game_id: number;
   scrambled_letters: string;
   timestamp: number;
