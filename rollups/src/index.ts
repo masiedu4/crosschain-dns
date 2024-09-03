@@ -12,42 +12,6 @@ const wallet = createWallet();
 
 const router = createRouter({ app });
 
-// get current game
-router.add<{ address: Address }>(
-  "current/:address",
-  ({ params: { address } }) => {
-    const player = Leaderboard.getOrCreatePlayer(address);
-    const gameHistory = player.getCurrentGame();
-
-    const gameData = JSON.stringify(gameHistory);
-
-    return gameData;
-  }
-);
-
-function getPlayerProfile(address: Address) {
-  const player = Leaderboard.getOrCreatePlayer(address);
-
-  return {
-    gameHistory: player.getGameHistory(),
-  };
-}
-
-// Modified route to use the new getPlayerProfile
-router.add<{ address: Address }>(
-  "player/:address",
-  ({ params: { address } }) => {
-    const playerProfile = getPlayerProfile(address);
-    return JSON.stringify(playerProfile);
-  }
-);
-
-//get leaderboard
-router.add("leaderboard", () => {
-  const leaderboard = Leaderboard.getLeaderboard();
-  return JSON.stringify(leaderboard);
-});
-
 let gameId: number = 1;
 
 app.addAdvanceHandler(wallet.handler);

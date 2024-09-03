@@ -6,9 +6,7 @@ import { fetchLatestLeaderboard } from "@/data/query";
 
 export default async function Play() {
   try {
-    const leaderboardData = await fetchLatestLeaderboard();
-    console.log(leaderboardData);
-    
+    const leaderboardData = await fetchLatestLeaderboard();    
 
     if (!leaderboardData) {
       throw new Error("No leaderboard data available");

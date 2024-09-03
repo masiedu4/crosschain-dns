@@ -30,6 +30,7 @@ export interface GameResult extends GameData {
 export interface UserProfile {
   gameHistory: GameData[];
 }
+
 export interface UserProfileStore {
   address: Address | null;
   profile: UserProfile | null;

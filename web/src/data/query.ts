@@ -240,9 +240,11 @@ export async function fetchLatestEndGame(
 
 export async function fetchLatestGameHistory(
   msgSender: string
-): Promise<any | null> {
+): Promise<GameData[] | null> {
+  console.log("Function called with msgSender:", msgSender);
   try {
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    const currentTime = Math.floor(Date.now() / 1000);
+
     const result = await fetchNotices();
     const notices = result?.data.notices.edges.map((edge) => edge.node);
 
@@ -250,25 +252,34 @@ export async function fetchLatestGameHistory(
       return null;
     }
 
-    let latestGameHistory = null;
+    let latestGameHistory: GameData[] | null = null;
     let latestTimestamp = 0;
 
     for (const notice of notices) {
       const noticeTimestamp = parseInt(notice.input.timestamp);
+
       if (
-        notice.input.msgSender === msgSender &&
+        notice.input.msgSender.toLowerCase() === msgSender.toLowerCase() &&
         noticeTimestamp <= currentTime &&
         noticeTimestamp > latestTimestamp
       ) {
+        console.log("Notice matches criteria");
         try {
-          const payloadJson = JSON.parse(hexToString(notice.payload));
-          if (payloadJson.type === "game_history") {
-            latestGameHistory = payloadJson;
+          const decodedPayload = hexToString(notice.payload);
+
+          const payloadJson = JSON.parse(decodedPayload);
+
+          if (
+            payloadJson.type === "game_history" &&
+            Array.isArray(payloadJson.data)
+          ) {
+            latestGameHistory = payloadJson.data;
             latestTimestamp = noticeTimestamp;
           }
         } catch (error) {
           console.error("Error parsing payload:", error);
         }
+      } else {
       }
     }
 

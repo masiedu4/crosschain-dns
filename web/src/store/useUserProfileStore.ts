@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import { inspect } from "@/data/inspect";
-import { Address, hexToString } from "viem";
+import { Address } from "viem";
 import {
   UserProfile,
   UserProfileStore,
   ProcessedGameRecord,
   GameData,
 } from "../lib/types";
+import { fetchLatestGameHistory } from "@/data/query";
 
 const processGameHistory = (gameHistory: GameData[]): ProcessedGameRecord[] => {
   return gameHistory.map((game) => ({
@@ -23,32 +23,30 @@ export const useUserProfileStore = create<UserProfileStore>((set, get) => ({
   fetchProfile: async (address: Address) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await inspect(`player/${address}`);
+      const gameHistory = await fetchLatestGameHistory(address);
 
-      if (!response) {
-        throw new Error("Failed to fetch user profile");
+      if (gameHistory === null) {
+        // Instead of throwing an error, we'll set an empty game history
+        set({
+          profile: { gameHistory: [] },
+          address,
+          isLoading: false,
+          error: "No game history found for this address",
+        });
+      } else {
+        set({
+          profile: { gameHistory },
+          address,
+          isLoading: false,
+        });
       }
-
-      if (!response.reports || response.reports.length === 0) {
-        throw new Error("No profile data available");
-      }
-
-      const hexProfile = response.reports[0].payload;
-
-      let profile: UserProfile;
-      try {
-        profile = JSON.parse(hexToString(hexProfile));
-      } catch (parseError) {
-        console.error("JSON parse error:", parseError);
-        throw new Error(
-          `Failed to parse profile data: ${(parseError as Error).message}`
-        );
-      }
-
-      set({ profile, address, isLoading: false });
     } catch (error) {
       console.error("Profile fetch error:", error);
-      set({ error: (error as Error).message, isLoading: false });
+      set({
+        error: `Failed to fetch profile: ${(error as Error).message}`,
+        isLoading: false,
+        profile: null,
+      });
     }
   },
   resetProfile: () => set({ profile: null, address: null, error: null }),
