@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { Address, hexToString, Hex } from "viem";
+import { Address } from "viem";
 import {
   RankedLeaderboardEntry,
   LeaderboardEntry,
@@ -9,16 +9,13 @@ import {
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-export function processLeaderboardData(payload: Hex): RankedLeaderboardEntry[] {
-  const decodedPayload = hexToString(payload);
 
-  const leaderboardEntries: LeaderboardEntry[] = JSON.parse(decodedPayload);
-
-  const sortedEntries = leaderboardEntries.sort(
-    (a, b) => b.totalPoints - a.totalPoints
+export function processLeaderboardData(leaderboard: LeaderboardEntry[]): RankedLeaderboardEntry[] {
+  const sortedEntries = [...leaderboard].sort(
+    (a: LeaderboardEntry, b: LeaderboardEntry) => b.totalPoints - a.totalPoints
   );
 
-  return sortedEntries.map((entry, index) => ({
+  return sortedEntries.map((entry: LeaderboardEntry, index: number): RankedLeaderboardEntry => ({
     ...entry,
     rank: index + 1,
   }));

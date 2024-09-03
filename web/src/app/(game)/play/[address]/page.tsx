@@ -9,23 +9,14 @@ export default async function Page({
   params: { address: string | Address };
 }) {
   try {
-    // const response = await inspect(`current/${params.address}`);
+    const gameData = await fetchLatestStartGame(params.address);
 
-    const gameData = await fetchLatestStartGame(params.address)
-   
     if (!gameData) {
       console.log("No game data available");
       return (
-        <GameWrapper
-          game_id={null}
-          scrambled_letters={null}
-          duration={null}
-      
-        />
+        <GameWrapper game_id={null} scrambled_letters={null} duration={null} />
       );
     }
-
-
 
     // Ensure all required fields are present
     if (
@@ -35,12 +26,7 @@ export default async function Page({
     ) {
       console.log("Incomplete game data", gameData);
       return (
-        <GameWrapper
-          game_id={null}
-          scrambled_letters={null}
-          duration={null}
-
-        />
+        <GameWrapper game_id={null} scrambled_letters={null} duration={null} />
       );
     }
 
@@ -56,12 +42,7 @@ export default async function Page({
   } catch (error) {
     console.error("Error fetching or parsing game data:", error);
     return (
-      <GameWrapper
-        game_id={null}
-        scrambled_letters={null}
-        duration={null}
-
-      />
+      <GameWrapper game_id={null} scrambled_letters={null} duration={null} />
     );
   }
 }

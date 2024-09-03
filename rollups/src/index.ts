@@ -93,7 +93,7 @@ app.addAdvanceHandler(async (data) => {
           // fetch leaderboard
           const leaderboardPayload = {
             type: "leaderboard",
-            data: Leaderboard.getLeaderboard,
+            data: Leaderboard.getLeaderboard(),
           };
 
           // fetch game history
