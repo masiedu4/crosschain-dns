@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { Address } from "viem";
 import {
-  UserProfile,
   UserProfileStore,
   ProcessedGameRecord,
   GameData,

@@ -1,5 +1,4 @@
 import React from "react";
-import { inspect } from "@/data/inspect";
 import { processLeaderboardData } from "@/lib/utils";
 import PlayContent from "./(components)/PlayContent";
 import { fetchLatestLeaderboard } from "@/data/query";
