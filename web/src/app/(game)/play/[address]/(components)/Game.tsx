@@ -12,7 +12,9 @@ import {
   FaBackspace,
   FaHourglassEnd,
   FaExclamationTriangle,
+  FaRedo, FaPaperPlane, FaLock, FaFont
 } from "react-icons/fa";
+
 import { Shuffle } from "lucide-react";
 import { useWriteInputBoxAddInput } from "@/hooks/generated";
 import { useToast } from "@/components/ui/use-toast";
@@ -39,7 +41,6 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
   const [letters, setLetters] = useState<string[]>([]);
   const [currentWord, setCurrentWord] = useState<string>("");
   const [words, setWords] = useState<string[]>([]);
-  const [submittedWords, setSubmittedWords] = useState<string[]>([]);
   const [timeLeft, setTimeLeft] = useState<number>(duration);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [showExhaustedDialog, setShowExhaustedDialog] =
@@ -192,7 +193,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
                 </p>
                 <Button
                   onClick={() => router.push("/play")}
-                  className="w-full flex justify-center items-center gap-2 rounded-full bg-primary-bg hover:bg-blue-600 transition-colors"
+                  className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg"
                 >
                   <span className="text-white font-semibold">
                     Start a New Game
@@ -277,27 +278,55 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
       </div>
 
       <Dialog open={gameEnded && !showResultsModal} onOpenChange={() => {}}>
-        <DialogContent className="sm:max-w-[425px] bg-secondary-bg border border-custom-border">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
-              <FaHourglassEnd className="text-yellow-400" />
-              Game Over
-            </DialogTitle>
-            <DialogDescription>
-              <div className="pt-4 text-white">
-                <p className="mb-4">
-                  Your time is up! Are you ready to see how well you did?
-                </p>
+      <DialogContent className="sm:max-w-[600px] bg-secondary-bg border border-custom-border">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
+            <FaHourglassEnd className="text-yellow-400" />
+            Game Over
+          </DialogTitle>
+          <DialogDescription>
+            <div className="pt-4 text-white">
+              <p className="mb-4">
+                Your time is up! Are you ready to see how well you did?
+              </p>
+              <div className="flex flex-col gap-4 mt-6">
+                <div className="flex items-start gap-4">
+                  <FaFont className="text-2xl text-green-400 mt-1" />
+                  <p className="text-white">
+                    You formed {words.length} words in this game.
+                  </p>
+                </div>
+                <div className="flex items-start gap-4">
+                  <FaRedo className="text-2xl text-red-400 mt-1" />
+                  <p className="text-white">
+                    This game cannot be attempted again.
+                  </p>
+                </div>
+                <div className="flex items-start gap-4">
+                  <FaPaperPlane className="text-2xl text-blue-400 mt-1" />
+                  <p className="text-white">
+                    Submission will send a transaction that ends this game and computes results.
+                  </p>
+                </div>
+                <div className="flex items-start gap-4">
+                  <FaLock className="text-2xl text-yellow-400 mt-1" />
+                  <p className="text-white">
+                    If this game is not submitted or the page is refreshed, you will not be able to create any other game for the next 5 minutes.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-center mt-6">
                 <Button
-                  className="w-full flex justify-center items-center gap-2 rounded-full bg-primary-bg hover:bg-blue-600 transition-colors"
+                  className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg"
                   onClick={handleSubmit}
                 >
-                  <span className="text-white font-semibold">View Results</span>
+                  <span className="text-white font-semibold">Submit</span>
                 </Button>
               </div>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
       </Dialog>
 
       {showResultsModal && gameResult && (

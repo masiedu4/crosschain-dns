@@ -104,7 +104,7 @@ const GameWrapper: React.FC<GameDataNullable> = ({
         <div className="flex justify-center mt-4">
           <Button 
             onClick={() => setGameStarted(true)}
-            className="text-sm inline-flex gap-2 rounded-[100px] py-1 px-3 bg-primary-bg self-stretch"
+            className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg"
           >
             Start Game
           </Button>
@@ -125,7 +125,7 @@ const GameWrapper: React.FC<GameDataNullable> = ({
         <div className="flex justify-center mt-4">
           <Button 
             onClick={() => router.push('/play')}
-            className="text-sm inline-flex gap-2 rounded-[100px] py-2 px-4 bg-primary-bg hover:bg-blue-600 transition-colors"
+            className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg"
           >
             Create New Game
           </Button>
