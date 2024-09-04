@@ -15,6 +15,8 @@ import {
   FaRedo, FaPaperPlane, FaLock, FaFont
 } from "react-icons/fa";
 
+import { IoIosSend } from "react-icons/io";
+
 import { Shuffle } from "lucide-react";
 import { useWriteInputBoxAddInput } from "@/hooks/generated";
 import { useToast } from "@/components/ui/use-toast";
@@ -193,10 +195,10 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
                 </p>
                 <Button
                   onClick={() => router.push("/play")}
-                  className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg"
+                  className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-primary-bg"
                 >
-                  <span className="text-white font-semibold">
-                    Start a New Game
+                  <span className="text-white  text-sm font-semibold">
+                  New game
                   </span>
                 </Button>
               </div>
@@ -315,11 +317,12 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
                   </p>
                 </div>
               </div>
-              <div className="flex justify-center mt-6">
+              <div className="flex justify-center mt-6 gap-2">
                 <Button
-                  className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg"
+                  className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-primary-bg"
                   onClick={handleSubmit}
                 >
+                  <IoIosSend className="text-white w-6 h-6"/>
                   <span className="text-white font-semibold">Submit</span>
                 </Button>
               </div>

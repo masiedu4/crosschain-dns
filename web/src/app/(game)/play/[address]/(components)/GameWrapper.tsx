@@ -6,7 +6,7 @@ import { useState } from "react";
 import { FaKeyboard, FaClock, FaStar, FaBan, FaTrophy, FaGamepad } from "react-icons/fa";
 import { IoMdRefresh } from "react-icons/io";
 import { useRouter } from 'next/navigation';
-
+import { FaRegCirclePlay } from "react-icons/fa6";
 type GameDataNullable = {
   game_id: number | null;
   scrambled_letters: string | null;
@@ -104,9 +104,10 @@ const GameWrapper: React.FC<GameDataNullable> = ({
         <div className="flex justify-center mt-4">
           <Button 
             onClick={() => setGameStarted(true)}
-            className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg"
+            className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-primary-bg"
           >
-            Start Game
+
+            Start 
           </Button>
         </div>
       </div>

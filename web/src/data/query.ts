@@ -83,7 +83,7 @@ export async function fetchNoticeByGameId(
       try {
         const payloadJson = JSON.parse(hexToString(notice.payload));
         if (payloadJson.game_id === gameId && payloadJson.is_ended === true) {
-          console.log("Parsed payload:", payloadJson);
+        
           return payloadJson;
         }
       } catch (error) {
