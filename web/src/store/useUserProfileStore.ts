@@ -8,10 +8,12 @@ import {
 import { fetchLatestGameHistory } from "@/data/query";
 
 const processGameHistory = (gameHistory: GameData[]): ProcessedGameRecord[] => {
-  return gameHistory.map((game) => ({
-    timestamp: game.timestamp,
-    total_points: game.points_earned + game.bonus_points_earned,
-  }));
+  return gameHistory
+    .map((game) => ({
+      timestamp: game.timestamp,
+      total_points: game.points_earned + game.bonus_points_earned,
+    }))
+    .sort((a, b) => b.timestamp - a.timestamp);
 };
 
 export const useUserProfileStore = create<UserProfileStore>((set, get) => ({
