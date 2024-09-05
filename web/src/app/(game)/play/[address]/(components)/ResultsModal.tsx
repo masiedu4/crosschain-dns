@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FaStar } from "react-icons/fa";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { GameResult } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { MdLeaderboard } from "react-icons/md";
+import { BsTwitterX } from "react-icons/bs";
 
 interface ResultsModalProps {
   gameResult: GameResult;
@@ -11,6 +13,7 @@ interface ResultsModalProps {
 }
 
 const ResultsModal: React.FC<ResultsModalProps> = ({ gameResult, onClose }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const totalWordsFormed = gameResult.words_submitted.length;
   const correctWords =
     gameResult.words_won.length + gameResult.bonus_words_won.length;
@@ -23,15 +26,12 @@ const ResultsModal: React.FC<ResultsModalProps> = ({ gameResult, onClose }) => {
     return "bg-red-500";
   };
 
+  const router = useRouter();
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent
-        className={cn(
-          "sm:max-w-[600px] p-0 bg-secondary-bg",
-          "border-none shadow-none" 
-        )}
-      >
-        <div className=" flex flex-col justify-center p-6 border gap-6  bg-secondary-bg">
+      <DialogContent className="sm:max-w-[600px] bg-secondary-bg border border-custom-border">
+        <div className=" flex flex-col justify-center p-6  gap-6  ">
           <div className="flex justify-between items-center self-stretch">
             <p className="text-white text-xl font-semibold">Game summary</p>
           </div>
@@ -104,16 +104,25 @@ const ResultsModal: React.FC<ResultsModalProps> = ({ gameResult, onClose }) => {
 
           <div className="flex gap-2">
             <Button
-              onClick={onClose}
-              className="flex px-6  gap-1.5 justify-center rounded-[100px] items-center w-24 h-10 bg-[#4E6AD7]"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onClick={() => router.push("/play")}
+              className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
             >
-              Play Again
+              <MdLeaderboard
+                className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+              />
+              <span>Leaderboard</span>
             </Button>
-            <Button className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg">
-              Share on X
-            </Button>
-            <Button className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center  w-24 h-10 bg-secondary-bg">
-              Leaderboard
+            <Button
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              className="flex px-6 gap-2 justify-center items-center h-10 bg-secondary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
+            >
+              <BsTwitterX
+                className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+              />
+              <span>Share on X</span>
             </Button>
           </div>
         </div>
