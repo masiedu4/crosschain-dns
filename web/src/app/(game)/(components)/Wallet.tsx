@@ -63,7 +63,7 @@ const Connected = ({ address }: { address: Address | undefined }) => {
       </div>
 
       <div className="gap-2 flex flex-col items-start self-stretch">
-        <p className="text-base text-white font-semibold">Game History</p>
+        <p className="text-base text-white font-semibold">Game History({gameHistory.length})</p>
         <div className="w-full flex flex-col p-4 gap-2 rounded-[8px] border border-custom-border bg-secondary-bg">
           {gameHistory.length > 0 ? (
             <div className="h-[200px] overflow-y-auto custom-scrollbar">
