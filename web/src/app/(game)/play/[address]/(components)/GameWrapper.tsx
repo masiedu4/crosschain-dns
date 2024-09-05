@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/button";
 import Game from "./Game";
 import { useState } from "react";
-import { FaKeyboard, FaClock, FaStar, FaBan, FaTrophy, FaGamepad } from "react-icons/fa";
+import { FaKeyboard, FaClock, FaStar, FaTrophy, FaGamepad, FaPlus, FaInfoCircle } from "react-icons/fa";
 import { IoMdRefresh } from "react-icons/io";
 import { useRouter } from 'next/navigation';
-import { FaRegCirclePlay } from "react-icons/fa6";
+import { TbSquareLetterAFilled } from "react-icons/tb";
+import { FaCircleInfo } from "react-icons/fa6";
+
 type GameDataNullable = {
   game_id: number | null;
   scrambled_letters: string | null;
@@ -45,9 +47,12 @@ const GameWrapper: React.FC<GameDataNullable> = ({
   };
 
   const GameRules = ({ is_staked }: { is_staked: boolean }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
     return (
       <div className="w-[600px] flex flex-col justify-center p-6 border rounded-[12px] gap-6 border-custom-border bg-secondary-bg">
-        <div className="flex justify-between items-center self-stretch">
+        <div className="flex  gap-2 items-center self-stretch">
+          <FaCircleInfo className="w-6 text-yellow-400" />
           <p className="text-white text-xl font-semibold">Game Rules</p>
         </div>
 
@@ -93,42 +98,51 @@ const GameWrapper: React.FC<GameDataNullable> = ({
             </p>
           </div>
 
-          <div className="flex items-start gap-4">
-            <FaBan className="text-2xl text-red-400 mt-1" />
-            <p className="text-white">
-              Proper nouns, abbreviations, and hyphenated words are not allowed. Only standard dictionary words count.
-            </p>
-          </div>
         </div>
 
         <div className="flex justify-center mt-4">
-          <Button 
-            onClick={() => setGameStarted(true)}
-            className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-primary-bg"
-          >
-
-            Start 
-          </Button>
+        
+        <Button
+          className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
+          onClick={() => setGameStarted(true)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <TbSquareLetterAFilled
+            className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+          />
+          <span className="text-base font-semibold">Start</span>
+        </Button>
         </div>
       </div>
     );
   };
 
   const NoGameCreated = () => {
+    const router = useRouter();
+    const [isHovered, setIsHovered] = useState(false);
+  
     return (
       <div className="w-[600px] flex flex-col justify-center p-6 border rounded-[12px] gap-6 border-custom-border bg-secondary-bg text-white">
         <div className="flex justify-between items-center self-stretch">
-          <h2 className="text-2xl font-semibold">No Game Created</h2>
+          <h2 className="text-2xl font-semibold flex items-center gap-3">
+            <FaGamepad className="text-yellow-400" />
+            No Active Game
+          </h2>
         </div>
-        <p className="text-lg">
-          You have not created a game yet. Click the button below to create a new game.
+        <p className="text-lg flex items-start gap-3">
+          <FaInfoCircle className="text-blue-400 mt-1 flex-shrink-0" />
+          <span>Ready to challenge yourself? Create a new word game and start forming words to earn points!</span>
         </p>
         <div className="flex justify-center mt-4">
           <Button 
             onClick={() => router.push('/play')}
-            className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-secondary-bg"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
           >
-            Create New Game
+            <FaPlus className={`${isHovered ? 'rotate-180' : ''} transition-transform duration-300`} />
+            <span>New Game</span>
           </Button>
         </div>
       </div>

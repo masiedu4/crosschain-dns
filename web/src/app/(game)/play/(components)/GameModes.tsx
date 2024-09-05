@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { TbSquareLetterAFilled } from "react-icons/tb";
-import { FaTrophy } from "react-icons/fa6";
+
 
 const GameModes = ({ openSetGame }: { openSetGame: () => void }) => {
+  const [isHovered, setIsHovered] = useState(false);
   return (
     <div className="w-full flex gap-2">
       {/* normal game*/}
@@ -15,11 +16,15 @@ const GameModes = ({ openSetGame }: { openSetGame: () => void }) => {
           </p>
         </div>
 
-        <Button 
-          className="bg-primary-bg gap-1 rounded-[100px]"
+        <Button
+          className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
           onClick={openSetGame}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <TbSquareLetterAFilled className="text-white" />
+          <TbSquareLetterAFilled
+            className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+          />
           <span className="text-base font-semibold">Play now</span>
         </Button>
       </div>

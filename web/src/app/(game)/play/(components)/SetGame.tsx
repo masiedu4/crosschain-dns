@@ -9,8 +9,12 @@ import { Address, stringToHex } from "viem";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
+import { FaKickstarter } from "react-icons/fa";
+import { Loader2 } from "lucide-react";
 
 const SetGame = ({ onClose }: { onClose: () => void }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { address } = useAccount();
   const { toast } = useToast();
   const router = useRouter();
@@ -25,6 +29,8 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
 
   const handleCreateGame = async () => {
     const data = { operation: "start_game", duration: duration };
+  
+    setIsSubmitting(true)
 
     if (address == undefined) {
       toast({
@@ -53,6 +59,7 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
         description: `${error}`,
         variant: "warning",
       });
+      setIsSubmitting(false)
     }
   };
 
@@ -125,11 +132,22 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
         </div>
 
         <Button
-          className="flex flex-col rounded-[100px] bg-primary-bg"
+          className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
           onClick={handleCreateGame}
-          disabled={isPending}
+          disabled={isSubmitting}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          <span className="text-white">Start game</span>
+          {isSubmitting ? (
+            <Loader2 className="w-6 h-6 text-white animate-spin" />
+          ) : (
+            <>
+              <FaKickstarter
+                className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+              />
+              <span className="text-base text-white">Start game</span>
+            </>
+          )}
         </Button>
       </div>
     </div>

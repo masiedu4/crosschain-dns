@@ -71,7 +71,7 @@ const Connected = ({ address }: { address: Address | undefined }) => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="bg-secondary-bg sticky top-0">
-                      Date
+                      Timestamp
                     </TableHead>
                     <TableHead className="bg-secondary-bg sticky top-0">
                       Points

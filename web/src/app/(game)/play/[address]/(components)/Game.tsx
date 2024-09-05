@@ -7,15 +7,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useUserProfileStore } from "@/store/useUserProfileStore";
+
 import {
   FaBackspace,
   FaHourglassEnd,
   FaExclamationTriangle,
   FaRedo, FaPaperPlane, FaLock, FaFont
 } from "react-icons/fa";
-
+import { Loader2 } from "lucide-react";
 import { IoIosSend } from "react-icons/io";
+import { IoAddSharp } from "react-icons/io5";
 
 import { Shuffle } from "lucide-react";
 import { useWriteInputBoxAddInput } from "@/hooks/generated";
@@ -38,8 +39,9 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
 
   const { toast } = useToast();
 
-  const router = useRouter();
+  const [isHovered, setIsHovered] = useState(false);
 
+  const router = useRouter();
   const [letters, setLetters] = useState<string[]>([]);
   const [currentWord, setCurrentWord] = useState<string>("");
   const [words, setWords] = useState<string[]>([]);
@@ -50,7 +52,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
   const [showResultsModal, setShowResultsModal] = useState(false);
 
-  const { profile } = useUserProfileStore();
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const storedAttempt = localStorage.getItem(`gameAttempt_${game_id}`);
@@ -105,6 +107,8 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
   const handleSubmit = async () => {
     const data = { operation: "end_game", wordsSubmitted: words };
 
+    setIsSubmitting(true)
+
     try {
       await writeContractAsync({
         args: [
@@ -112,6 +116,8 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
           stringToHex(JSON.stringify(data)),
         ],
       });
+
+      
 
       toast({
         title: "Submitting answers",
@@ -125,13 +131,16 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
       // Fetch the notice for the current game
       const result = await fetchNoticeByGameId(game_id);
 
+      setIsSubmitting(false)
+
       if (result) {
         toast({
-          title: `You scored ${result.bonus_points_earned + result.points_earned}`,
+          title: `You scored ${result.bonus_points_earned + result.points_earned} points!`,
           variant: "success",
         });
         setGameResult(result);
         setShowResultsModal(true);
+        localStorage.removeItem(`gameAttempt_${game_id}`)
       } else {
         toast({
           title: "Error",
@@ -185,19 +194,22 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
             </DialogTitle>
             <DialogDescription>
               <div className="pt-4 text-white">
-                <p className="mb-4">
+                <p className="mb-4 text-base">
                   You have already attempted this game. Unfortunately, you
                   cannot play this game again.
                 </p>
-                <p className="mb-4">
+                <p className="mb-4 text-base">
                   But don't worry! There are always new challenges waiting for
                   you.
                 </p>
                 <Button
                   onClick={() => router.push("/play")}
-                  className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-primary-bg"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
                 >
-                  <span className="text-white  text-sm font-semibold">
+                  <IoAddSharp className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}/>
+                  <span className="text-white  text-base font-semibold">
                   New game
                   </span>
                 </Button>
@@ -319,11 +331,20 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
               </div>
               <div className="flex justify-center mt-6 gap-2">
                 <Button
-                  className="flex px-6 gap-1.5 justify-center border rounded-[100px] border-custom-border items-center w-24 h-10 bg-primary-bg"
+                  className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
                   onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
                 >
-                  <IoIosSend className="text-white w-6 h-6"/>
-                  <span className="text-white font-semibold">Submit</span>
+               {isSubmitting ? (
+                    <Loader2 className="w-6 h-6 text-white animate-spin" />
+                  ) : (
+                    <>
+                      <IoIosSend className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}/>
+                      <span className="text-white font-semibold">Submit</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
