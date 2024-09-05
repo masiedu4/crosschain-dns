@@ -11,7 +11,7 @@ export default async function Page({
     const gameData = await fetchLatestStartGame(params.address);
 
     if (!gameData) {
-      console.log("No game data available");
+  
       return (
         <GameWrapper game_id={null} scrambled_letters={null} duration={null} />
       );
@@ -23,7 +23,7 @@ export default async function Page({
       !gameData.scrambled_letters ||
       !gameData.duration
     ) {
-      console.log("Incomplete game data", gameData);
+    
       return (
         <GameWrapper game_id={null} scrambled_letters={null} duration={null} />
       );

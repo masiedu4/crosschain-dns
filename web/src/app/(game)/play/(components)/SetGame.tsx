@@ -9,7 +9,7 @@ import { Address, stringToHex } from "viem";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
-import { FaKickstarter } from "react-icons/fa";
+import { FaKickstarter, FaClock, FaExclamationTriangle, FaGamepad, FaBolt } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 
 const SetGame = ({ onClose }: { onClose: () => void }) => {
@@ -97,60 +97,79 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
   }, [isSuccess]);
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div
-        className="bg-black bg-opacity-50 absolute inset-0"
-        onClick={onClose}
-      ></div>
-      <div className="justify-center w-[500px] border border-custom-border bg-secondary-bg p-6 rounded-[12px] flex flex-col items-start gap-8 relative z-10">
-        <div className="gap-6 flex-col flex items-start self-stretch">
-          <div className="flex justify-between items-center self-stretch">
-            <p className="text-xl font-semibold">Game setup</p>
-            <button
-              onClick={onClose}
-              className="text-white hover:text-secondary-text"
-            >
-              <X />
-            </button>
-          </div>
-
-          <div className="flex flex-col items-start gap-4 self-stretch">
-            <div className="flex flex-col gap-1 self-stretch">
-              <p className="text-base text-secondary-text font-medium">
-                Duration
-              </p>
-              <Slider
-                value={[duration]}
-                durations={durations}
-                defaultValue={[30]}
-                max={60}
-                min={20}
-                step={10}
-                onValueChange={handleSliderChange}
-              />
-            </div>
-          </div>
+    <div
+      className="bg-black bg-opacity-50 absolute inset-0"
+      onClick={onClose}
+    ></div>
+    <div className="justify-center w-[500px] border border-custom-border bg-secondary-bg p-6 rounded-[12px] flex flex-col items-start gap-8 relative z-10">
+      <div className="gap-6 flex-col flex items-start self-stretch">
+        <div className="flex justify-between items-center self-stretch">
+          <p className="text-xl font-semibold flex items-center gap-2">
+            <FaGamepad className="text-yellow-400" />
+            Game setup
+          </p>
+          <button
+            onClick={onClose}
+            className="text-white hover:text-secondary-text"
+          >
+            <X />
+          </button>
         </div>
 
-        <Button
-          className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
-          onClick={handleCreateGame}
-          disabled={isSubmitting}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {isSubmitting ? (
-            <Loader2 className="w-6 h-6 text-white animate-spin" />
-          ) : (
-            <>
-              <FaKickstarter
-                className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
-              />
-              <span className="text-base text-white">Start game</span>
-            </>
-          )}
-        </Button>
+        <div className="flex flex-col items-start gap-4 self-stretch">
+          <div className="flex flex-col gap-1 self-stretch">
+            <p className="text-base text-secondary-text font-medium">
+              Duration
+            </p>
+            <Slider
+              value={[duration]}
+              durations={durations}
+              defaultValue={[30]}
+              max={60}
+              min={20}
+              step={10}
+              onValueChange={handleSliderChange}
+            />
+          </div>
+        </div>
       </div>
+
+      {/* New section for game disclaimers */}
+      <div className="flex flex-col gap-3 text-sm text-white">
+        <div className="flex items-start gap-2">
+          <FaClock className="text-blue-400 mt-1 flex-shrink-0" />
+          <p>Shorter durations provide more letters and potential words, increasing the challenge and excitement!</p>
+        </div>
+        <div className="flex items-start gap-2">
+          <FaExclamationTriangle className="text-yellow-400 mt-1 flex-shrink-0" />
+          <p>Creating a game initiates a blockchain transaction. Ensure your wallet is connected and has sufficient funds.</p>
+        </div>
+        <div className="flex items-start gap-2">
+          <FaBolt className="text-green-400 mt-1 flex-shrink-0" />
+          <p>Each game is unique! The letter set changes every time, so be ready for a fresh challenge with each play.</p>
+        </div>
+      </div>
+
+      <Button
+        className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
+        onClick={handleCreateGame}
+        disabled={isSubmitting}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {isSubmitting ? (
+          <Loader2 className="w-6 h-6 text-white animate-spin" />
+        ) : (
+          <>
+            <FaKickstarter
+              className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+            />
+            <span className="text-base text-white">Create game</span>
+          </>
+        )}
+      </Button>
     </div>
+  </div>
   );
 };
 

@@ -241,7 +241,7 @@ export async function fetchLatestEndGame(
 export async function fetchLatestGameHistory(
   msgSender: string
 ): Promise<GameData[] | null> {
-  console.log("Function called with msgSender:", msgSender);
+
   try {
     const currentTime = Math.floor(Date.now() / 1000);
 
@@ -263,7 +263,7 @@ export async function fetchLatestGameHistory(
         noticeTimestamp <= currentTime &&
         noticeTimestamp > latestTimestamp
       ) {
-        console.log("Notice matches criteria");
+
         try {
           const decodedPayload = hexToString(notice.payload);
 

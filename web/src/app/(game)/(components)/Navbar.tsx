@@ -15,9 +15,14 @@ import {
 import logoImg from "./logo.png";
 import Help from "./Help";
 import Connector from "./Wallet";
+import Link from "next/link";
+
+import { useAccount } from "wagmi";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean | undefined>(false);
+
+  const { address } = useAccount();
 
   return (
     <div className="flex justify-between px-16 py-8">
@@ -35,12 +40,17 @@ const Navbar = () => {
           className="w-[200px]  gap-2 items-start self-stretch bg-secondary-bg rounded-xl border border-custom-border shadow-lg"
           align="start"
         >
-          <DropdownMenuItem className="text-white px-4  hover:bg-primary-bg cursor-pointer ">
-            Home
-          </DropdownMenuItem>
-          <DropdownMenuItem className=" text-white px-4 hover:bg-primary-bg cursor-pointer ">
-            Feedback
-          </DropdownMenuItem>
+          <Link href={"/play"}>
+            {" "}
+            <DropdownMenuItem className="text-white px-4  hover:bg-primary-bg cursor-pointer ">
+              Home
+            </DropdownMenuItem>
+          </Link>
+          <Link href={`/play/${address}`}>
+            <DropdownMenuItem className=" text-white px-4 hover:bg-primary-bg cursor-pointer ">
+              Current game
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuContent>
       </DropdownMenu>
       <Image src={logoImg} alt="logo" width={150} height={80} priority />

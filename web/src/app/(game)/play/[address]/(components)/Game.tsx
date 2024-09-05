@@ -138,9 +138,10 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
           title: `You scored ${result.bonus_points_earned + result.points_earned} points!`,
           variant: "success",
         });
+        localStorage.removeItem(`gameAttempt_${game_id}`)
         setGameResult(result);
         setShowResultsModal(true);
-        localStorage.removeItem(`gameAttempt_${game_id}`)
+        
       } else {
         toast({
           title: "Error",

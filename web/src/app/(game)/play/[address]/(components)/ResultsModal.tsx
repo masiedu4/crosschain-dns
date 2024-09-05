@@ -114,16 +114,6 @@ const ResultsModal: React.FC<ResultsModalProps> = ({ gameResult, onClose }) => {
               />
               <span>Leaderboard</span>
             </Button>
-            <Button
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              className="flex px-6 gap-2 justify-center items-center h-10 bg-secondary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
-            >
-              <BsTwitterX
-                className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
-              />
-              <span>Share on X</span>
-            </Button>
           </div>
         </div>
       </DialogContent>

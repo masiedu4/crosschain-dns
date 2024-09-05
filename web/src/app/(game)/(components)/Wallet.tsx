@@ -63,7 +63,7 @@ const Connected = ({ address }: { address: Address | undefined }) => {
       </div>
 
       <div className="gap-2 flex flex-col items-start self-stretch">
-        <p className="text-base text-white font-semibold">Game History({gameHistory.length})</p>
+        <p className="text-base text-white font-semibold">Games played({gameHistory.length})</p>
         <div className="w-full flex flex-col p-4 gap-2 rounded-[8px] border border-custom-border bg-secondary-bg">
           {gameHistory.length > 0 ? (
             <div className="h-[200px] overflow-y-auto custom-scrollbar">
@@ -143,10 +143,14 @@ const Wallet = () => {
         <DropdownMenu open={isConnectorOpen} onOpenChange={setIsConnectorOpen}>
           <DropdownMenuTrigger asChild>
             {isConnectorOpen ? (
+        
+
+             
               <Button className="cursor-pointer inline-flex gap-2 rounded-[100px] py-2 px-4 bg-secondary-bg">
                 <IoMdClose className="text-white" />
-                <span>Close</span>
+                <span className="">Close</span>
               </Button>
+
             ) : (
               <Button className="cursor-pointer inline-flex gap-2 rounded-[100px] py-2 px-4 bg-secondary-bg">
                 <FaWallet className="text-white" />
