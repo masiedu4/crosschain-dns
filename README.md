@@ -1,14 +1,20 @@
-# Milky Adverb
+# Milky Adverb | EthGlobal Hackathon 2024
 
 Milky Adverb is a cross-chain word game that leverages LayerZero for seamless multi-chain interactions and Cartesi Rollups for off-chain computation. This project demonstrates how to create a chain-agnostic game that can be played from any supported blockchain while maintaining a unified game state.
+
+## Demo
+
+The game is deployed on Base Sepolia and supports entries from ETH Sepolia. Visit [milkyadverb.com](https://milkyadverb.com) to play the game.
+
+> More testnets and chains will be supported in the future, post hackathon.
 
 ## Project Structure
 
 The project is divided into three main folders:
 
-1. `onchain`: Contains smart contracts for LayerZero integration, Solidity code, and Hardhat environment.
-2. `rollups`: Contains game logic and computation, built with Cartesi Rollups, Deroll, and TypeScript.
-3. `web`: Contains the frontend application built with Next.js, Zustand, TailwindCSS, Wagmi, Viem, and Shadcn UI.
+1. [`onchain`](./onchain/): Contains smart contracts for LayerZero integration, Solidity code, and Hardhat environment.
+2. [`rollups`](./rollups/): Contains game logic and computation, built with Cartesi Rollups, Deroll, and TypeScript.
+3. [`web`](./web/): Contains the frontend application built with Next.js, Zustand, TailwindCSS, Wagmi, Viem, and Shadcn UI.
 
 ### Onchain
 
