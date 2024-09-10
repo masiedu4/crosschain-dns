@@ -1,11 +1,12 @@
 import React from "react";
 import { processLeaderboardData } from "@/lib/utils";
 import PlayContent from "./(components)/PlayContent";
-import { fetchLatestNormalLeaderboard } from "@/data/query";
+import { fetchLatestNormalLeaderboard, fetchLatestStakedLeaderboard } from "@/data/query";
 
 export default async function Play() {
   try {
     const leaderboardData = await fetchLatestNormalLeaderboard();
+    const leaderboardData2 = await fetchLatestStakedLeaderboard()
 
     if (!leaderboardData) {
       throw new Error("No leaderboard data available");
@@ -13,7 +14,8 @@ export default async function Play() {
 
     return (
       <PlayContent
-        leaderboardData={processLeaderboardData(leaderboardData.data)}
+        normalLeaderboard={processLeaderboardData(leaderboardData.data)}
+        stakedLeaderboard={processLeaderboardData(leaderboardData2.data)}
       />
     );
   } catch (error) {

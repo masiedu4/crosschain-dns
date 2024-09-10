@@ -6,12 +6,14 @@ import SetGame from "./SetGame";
 import Leaderboard from "./Leaderboard";
 
 type PlayContentProps = {
-  leaderboardData?: any;
+  normalLeaderboard?: any;
+  stakedLeaderboard?:any;
   error?: string;
 };
 
 const PlayContent: React.FC<PlayContentProps> = ({
-  leaderboardData,
+  normalLeaderboard,
+  stakedLeaderboard,
   error,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,7 +35,7 @@ const PlayContent: React.FC<PlayContentProps> = ({
         {error ? (
           <div>{error}</div>
         ) : (
-          <Leaderboard leaderboardData={leaderboardData} />
+          <Leaderboard normalLeaderboardData={normalLeaderboard} stakedLeaderBoardData={stakedLeaderboard} />
         )}
       </div>
     </div>
