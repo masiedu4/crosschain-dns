@@ -1,7 +1,7 @@
 import { gql } from "graphql-tag";
 import { Hex, hexToString } from "viem";
 import { graphQlServer } from "./config";
-import { GameData, GameResult } from "../lib/types";
+import { GameData, GameResult, PlayerProfile } from "../lib/types";
 
 export const NOTICES_QUERY = gql`
   query notices {
@@ -196,8 +196,6 @@ export async function fetchLatestStartGame(
       }
     }
 
-    
-
     // Find the latest start_game that hasn't ended
     for (const notice of notices) {
       const noticeTimestamp = parseInt(notice.input.timestamp);
@@ -214,7 +212,6 @@ export async function fetchLatestStartGame(
             latestStartGame = payloadJson;
             latestTimestamp = noticeTimestamp;
           }
-          
         } catch (error) {
           // Silently skip invalid payloads
           continue;
@@ -274,9 +271,9 @@ export async function fetchLatestEndGame(
 
 // most recent  game history for msg.sender
 
-export async function fetchLatestGameHistory(
+export async function fetchPlayerProfile(
   msgSender: string
-): Promise<GameData[] | null> {
+): Promise<PlayerProfile | null> {
   try {
     const currentTime = Math.floor(Date.now() / 1000);
 
@@ -287,7 +284,7 @@ export async function fetchLatestGameHistory(
       return null;
     }
 
-    let latestGameHistory: GameData[] | null = null;
+    let playerProfile: PlayerProfile | null = null;
     let latestTimestamp = 0;
 
     for (const notice of notices) {
@@ -303,11 +300,8 @@ export async function fetchLatestGameHistory(
 
           const payloadJson = JSON.parse(decodedPayload);
 
-          if (
-            payloadJson.type === "game_history" &&
-            Array.isArray(payloadJson.data)
-          ) {
-            latestGameHistory = payloadJson.data;
+          if (payloadJson.type === "player_profile") {
+            playerProfile = payloadJson.data;
             latestTimestamp = noticeTimestamp;
           }
         } catch (error) {
@@ -316,8 +310,9 @@ export async function fetchLatestGameHistory(
       } else {
       }
     }
+    console.log(playerProfile);
 
-    return latestGameHistory;
+    return playerProfile;
   } catch (error) {
     throw error;
   }

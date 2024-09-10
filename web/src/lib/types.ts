@@ -8,7 +8,7 @@ export interface InspectOutput {
 }
 
 export interface GameData {
-  type:string,
+  type: string;
   game_id: number;
   scrambled_letters: string;
   timestamp: number;
@@ -18,7 +18,7 @@ export interface GameData {
   bonus_words_won: string[];
   points_earned: number;
   bonus_points_earned: number;
-  is_staked:boolean;
+  is_staked: boolean;
 }
 
 export interface GameResult extends GameData {
@@ -28,18 +28,17 @@ export interface GameResult extends GameData {
   additional_possible_words_count: number;
 }
 
-export interface UserProfile {
-  gameHistory: GameData[];
-}
-
 export interface UserProfileStore {
   address: Address | null;
-  profile: UserProfile | null;
+  profile: PlayerProfile | null;
   isLoading: boolean;
   error: string | null;
+  usdcBalance: string;
   fetchProfile: (address: Address) => Promise<void>;
   resetProfile: () => void;
   getProcessedGameHistory: () => ProcessedGameRecord[];
+  getWithdrawals: () => Transaction[];
+  getEarnings: () => Transaction[];
 }
 
 export interface LeaderboardEntry {
@@ -57,4 +56,15 @@ export interface ProcessedGameRecord {
   timestamp: number;
   total_points: number;
   is_staked: boolean;
+}
+
+interface Transaction {
+  timestamp: number;
+  amount: number;
+}
+
+export interface PlayerProfile {
+  gameHistory: GameData[];
+  withdrawals: Transaction[];
+  earnings: Transaction[];
 }

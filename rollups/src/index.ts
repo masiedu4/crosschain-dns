@@ -88,12 +88,7 @@ app.addAdvanceHandler(async (data) => {
             payload: stringToHex(JSON.stringify(playerProfile)),
           });
 
-          // console.log(
-          //   "Game ended successfully with statistics",
-          //   gameStatistics,
-          //   Leaderboard.getNormalLeaderboard(),
-          //   Leaderboard.getStakedLeaderboard()
-          // );
+       
         } catch (error) {}
 
       default:

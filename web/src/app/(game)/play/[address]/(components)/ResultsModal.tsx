@@ -5,7 +5,6 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { GameResult } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { MdLeaderboard } from "react-icons/md";
-import { BsTwitterX } from "react-icons/bs";
 import { GiSpellBook } from "react-icons/gi";
 
 interface ResultsModalProps {

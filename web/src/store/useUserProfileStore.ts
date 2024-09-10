@@ -4,8 +4,9 @@ import {
   UserProfileStore,
   ProcessedGameRecord,
   GameData,
+  PlayerProfile,
 } from "../lib/types";
-import { fetchLatestGameHistory } from "@/data/query";
+import { fetchPlayerProfile } from "@/data/query";
 
 const processGameHistory = (gameHistory: GameData[]): ProcessedGameRecord[] => {
   return gameHistory
@@ -21,25 +22,31 @@ export const useUserProfileStore = create<UserProfileStore>((set, get) => ({
   address: null,
   profile: null,
   isLoading: false,
+  usdcBalance: "",
   error: null,
   fetchProfile: async (address: Address) => {
     set({ isLoading: true, error: null });
     try {
-      const gameHistory = await fetchLatestGameHistory(address);
+      const playerProfile = await fetchPlayerProfile(address);
+      const usdcBalance = "10";
 
-      if (gameHistory === null) {
-        // Instead of throwing an error, we'll set an empty game history
+      if (playerProfile === null) {
         set({
-          profile: { gameHistory: [] },
+          profile: {
+            gameHistory: [],
+            withdrawals: [],
+            earnings: [],
+          },
           address,
           isLoading: false,
-          error: "No game history found for this address",
+          error: "No profile found for this address",
         });
       } else {
         set({
-          profile: { gameHistory },
+          profile: playerProfile,
           address,
           isLoading: false,
+          usdcBalance: usdcBalance,
         });
       }
     } catch (error) {
@@ -57,5 +64,15 @@ export const useUserProfileStore = create<UserProfileStore>((set, get) => ({
     const profile = get().profile;
     if (!profile) return [];
     return processGameHistory(profile.gameHistory);
+  },
+
+  getWithdrawals: () => {
+    const profile = get().profile;
+    return profile?.withdrawals || [];
+  },
+
+  getEarnings: () => {
+    const profile = get().profile;
+    return profile?.earnings || [];
   },
 }));

@@ -27,17 +27,14 @@ export const truncateAddress = (addr: string | Address | undefined) => {
 };
 
 
-export function convertUnixToDate(unixTimestamp: number): string {
-  const date = new Date(unixTimestamp * 1000);
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: 'short',
-    month: 'long',
+export const convertUnixToDate = (timestamp: number): string => {
+  const date = new Date(timestamp * 1000); // Convert Unix timestamp to milliseconds
+  return date.toLocaleString('en-US', {
+    month: 'short',
     day: 'numeric',
     year: 'numeric',
     hour: 'numeric',
-    minute: '2-digit',
+    minute: 'numeric',
     hour12: true
-  };
-  
-  return date.toLocaleString('en-US', options);
-}
+  });
+};

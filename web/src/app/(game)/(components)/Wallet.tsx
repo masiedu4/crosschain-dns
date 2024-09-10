@@ -1,10 +1,8 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAccount, useDisconnect, useConnect } from "wagmi";
-import { FaWallet } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
+import { FaWallet, FaHistory, FaCoins, FaGamepad } from "react-icons/fa";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,25 +12,19 @@ import {
 import { injected } from "wagmi/connectors";
 import { Address } from "viem";
 import { Unlink } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
-import { convertUnixToDate, truncateAddress } from "@/lib/utils";
-import { ProcessedGameRecord } from "@/lib/types";
+import { truncateAddress } from "@/lib/utils";
 import { useUserProfileStore } from "@/store/useUserProfileStore";
 import { useToast } from "@/components/ui/use-toast";
+import { motion } from "framer-motion";
+import HistorySection from "./History";
+import USDCBalance from "./Balance";
 
 const Connected = ({ address }: { address: Address | undefined }) => {
   const { disconnect } = useDisconnect();
   const { chain } = useAccount();
-
-  const { isLoading, getProcessedGameHistory } = useUserProfileStore();
+  const { isLoading, getProcessedGameHistory, getWithdrawals, getEarnings, usdcBalance } =
+    useUserProfileStore();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -46,76 +38,67 @@ const Connected = ({ address }: { address: Address | undefined }) => {
   }, [isLoading, toast]);
 
   const gameHistory = getProcessedGameHistory();
+  const withdrawalHistory = getWithdrawals();
+  const earningHistory = getEarnings();
 
   return (
-    <div className="w-[450px] flex p-6 flex-col items-start gap-6 rounded-xl  bg-secondary-bg">
-      <div className="flex gap-16 justify-between items-center w-full">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="w-[450px] flex p-6 flex-col items-start gap-6 rounded-xl bg-secondary-bg shadow-lg"
+    >
+      <div className="flex justify-between items-center w-full bg-primary-bg/20 p-4 rounded-lg">
         <div className="flex gap-2 items-center">
-          <FaWallet className="text-white" />
-          <span className="text-white ">{truncateAddress(address)}</span>
-          <span className="text-white ">|</span>
-          <span className="text-white ">{chain?.name}</span>
+          <FaWallet className="text-yellow-400" />
+          <span className="text-white font-semibold">
+            {truncateAddress(address)}
+          </span>
+          <span className="text-gray-400">|</span>
+          <span className="text-white">{chain?.name}</span>
         </div>
-        <Unlink
+        <Button
           onClick={() => disconnect()}
-          className="text-red-600 w-4 h-4 cursor-pointer"
-        />
+          variant="ghost"
+          size="sm"
+          className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+        >
+          <Unlink className="w-4 h-4 mr-2" />
+          Disconnect
+        </Button>
       </div>
 
-      <div className="gap-2 flex flex-col items-start self-stretch">
-        <p className="text-base text-white font-semibold">Games played({gameHistory.length})</p>
-        <div className="w-full flex flex-col p-4 gap-2 rounded-[8px] border border-custom-border bg-secondary-bg">
-          {gameHistory.length > 0 ? (
-            <div className="h-[200px] overflow-y-auto custom-scrollbar">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="bg-secondary-bg sticky top-0">
-                      Timestamp
-                    </TableHead>
-                    <TableHead className="bg-secondary-bg sticky top-0">
-                      Points
-                    </TableHead>
-                    <TableHead className="bg-secondary-bg sticky top-0">
-                      Mode
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {gameHistory.map((game: ProcessedGameRecord) => (
-                    <TableRow key={game.timestamp}>
-                      <TableCell className="text-sm text-white">
-                        {convertUnixToDate(game.timestamp)}
-                      </TableCell>
-                      <TableCell className="text-sm text-white">
-                        {game.total_points}
-                      </TableCell>
-                      <TableCell className="text-sm text-white">
-                        {game.is_staked ? 'Staked' : 'Normal'}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-            <p className="text-base text-white">No game history available.</p>
-          )}
-        </div>
-      </div>
-    </div>
+      <USDCBalance balance={usdcBalance} />
+
+      <HistorySection
+        title="Games Played"
+        Icon={FaGamepad}
+        data={gameHistory}
+        columns={["Timestamp", "Points", "Mode"]}
+      />
+
+      <HistorySection
+        title="Withdrawal History"
+        Icon={FaHistory}
+        data={withdrawalHistory}
+        columns={["Date", "Amount", "Status"]}
+      />
+
+      <HistorySection
+        title="Earning History"
+        Icon={FaCoins}
+        data={earningHistory}
+        columns={["Date", "Amount", "Source"]}
+      />
+    </motion.div>
   );
 };
 
 const Wallet = () => {
   const [isConnectorOpen, setIsConnectorOpen] = useState<boolean>(false);
-
   const { address, status } = useAccount();
-
   const { connect } = useConnect();
-
   const { fetchProfile, resetProfile, isLoading } = useUserProfileStore();
-
   const { toast } = useToast();
 
   useEffect(() => {
@@ -137,45 +120,47 @@ const Wallet = () => {
   }, [isLoading, toast]);
 
   return (
-    <>
-      {status !== "connected" ? (
-        <Button
-          onClick={() => connect({ connector: injected() })}
-          className="inline-flex gap-2 rounded-[100px] py-2 px-4 bg-secondary-bg"
-        >
-          <FaWallet className="text-white" /> <span>Connect</span>
+    <DropdownMenu open={isConnectorOpen} onOpenChange={setIsConnectorOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button className="inline-flex gap-2 rounded-full py-2 px-4 bg-primary-bg hover:bg-primary-bg-hover transition-colors duration-300">
+          {status !== "connected" ? (
+            <>
+              <FaWallet className="text-yellow-400" />
+              <span>Connect Wallet</span>
+            </>
+          ) : (
+            <>
+              <FaWallet className="text-yellow-400" />
+              <span>{truncateAddress(address)}</span>
+            </>
+          )}
         </Button>
-      ) : (
-        <DropdownMenu open={isConnectorOpen} onOpenChange={setIsConnectorOpen}>
-          <DropdownMenuTrigger asChild>
-            {isConnectorOpen ? (
-        
-
-             
-              <Button className="cursor-pointer inline-flex gap-2 rounded-[100px] py-2 px-4 bg-secondary-bg">
-                <IoMdClose className="text-white" />
-                <span className="">Close</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="p-0 bg-secondary-bg rounded-xl border border-custom-border shadow-lg"
+        align="end"
+        sideOffset={5}
+      >
+        <DropdownMenuItem className="p-0 focus:bg-transparent">
+          {status === "connected" ? (
+            <Connected address={address} />
+          ) : (
+            <div className="p-6 flex flex-col items-center">
+              <FaWallet className="text-4xl text-yellow-400 mb-4" />
+              <p className="text-white text-lg mb-4">
+                Connect your wallet to start playing!
+              </p>
+              <Button
+                onClick={() => connect({ connector: injected() })}
+                className="inline-flex gap-2 rounded-full py-2 px-6 bg-primary-bg hover:bg-primary-bg-hover transition-colors duration-300"
+              >
+                Connect Wallet
               </Button>
-
-            ) : (
-              <Button className="cursor-pointer inline-flex gap-2 rounded-[100px] py-2 px-4 bg-secondary-bg">
-                <FaWallet className="text-white" />
-                <span>{truncateAddress(address)}</span>
-              </Button>
-            )}
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className=" p-0 bg-secondary-bg rounded-xl border border-custom-border shadow-lg"
-            align="end"
-            sideOffset={5}
-          >
-            <DropdownMenuItem className="p-0 focus:bg-transparent">
-              <Connected address={address} />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
-    </>
+            </div>
+          )}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

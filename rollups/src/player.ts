@@ -371,7 +371,7 @@ export class Player {
 
     return Array.from(verifiedWords);
   }
-
+  
   private getSamplePossibleWords(
     scrambledLetters: string,
     wordList: string[],
