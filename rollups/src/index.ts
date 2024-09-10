@@ -66,10 +66,10 @@ app.addAdvanceHandler(async (data) => {
           }
           
 
-          // fetch game history
-          const gameHistory = {
-            type: "game_history",
-            data: player.getGameHistory(),
+          // fetch player profile
+          const playerProfile = {
+            type: "player_profile",
+            data: player.getPlayerProfile(),
           };
 
           await app.createNotice({
@@ -85,7 +85,7 @@ app.addAdvanceHandler(async (data) => {
           });
 
           await app.createNotice({
-            payload: stringToHex(JSON.stringify(gameHistory)),
+            payload: stringToHex(JSON.stringify(playerProfile)),
           });
 
           // console.log(
