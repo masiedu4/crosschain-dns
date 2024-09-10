@@ -1,7 +1,7 @@
-"use client";
 
-import { Button } from "@/components/ui/button";
+'use client'
 import React, { useState, useEffect, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import { RankedLeaderboardEntry } from "@/lib/types";
 import { truncateAddress } from "@/lib/utils";
 import { useAccount } from "wagmi";
 import { MdLeaderboard, MdSportsScore, MdEmojiEvents } from "react-icons/md";
-
+import { FaMedal, FaGamepad, FaTrophy } from "react-icons/fa";
 
 interface LeaderboardProps {
   stakedLeaderBoardData: RankedLeaderboardEntry[];
@@ -44,54 +44,63 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
   };
 
   if (!stakedLeaderBoardData || !normalLeaderboardData) {
-    return <div>Loading leaderboard data...</div>;
+    return <div className="text-white text-center p-4">Loading leaderboard data...</div>;
   }
 
   return (
-    <div className="w-full flex p-6 flex-col items-start gap-6 bg-secondary-bg rounded-[12px] border border-custom-border">
-      <div className="flex flex-col gap-2 items-start">
-      <div className="flex gap-2 items-center">
-      <MdLeaderboard />
-        <p className="text-xl font-semibold">Leaderboards</p>
-        </div>
-        <div className="flex gap-2 items-center self-stretch">
-          <Button
-            className={`bg-secondary-bg gap-1 rounded-[100px] ${!isStaked ? "bg-primary-bg" : ""}`}
-            onClick={toggleStaked}
-          >
-            Normal game
-          </Button>
-          <Button
-            className={`bg-secondary-bg gap-1 rounded-[100px] ${isStaked ? "bg-primary-bg" : ""}`}
-            onClick={toggleStaked}
-          >
-            Stake and play
-          </Button>
+    <div className="w-full flex p-6 flex-col items-start gap-6 bg-secondary-bg rounded-[12px] border border-custom-border shadow-lg">
+      <div className="flex flex-col gap-4 items-start w-full">
+        <div className="flex justify-between items-center w-full">
+          <div className="flex gap-2 items-center">
+            <MdLeaderboard className="text-3xl text-yellow-400" />
+            <h2 className="text-2xl font-bold text-white">Leaderboards</h2>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${!isStaked ? "bg-primary-bg text-white" : "bg-secondary-bg text-gray-400 hover:bg-primary-bg hover:text-white"}`}
+              onClick={toggleStaked}
+            >
+              <FaGamepad />
+              Normal Game
+            </Button>
+            <Button
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${isStaked ? "bg-primary-bg text-white" : "bg-secondary-bg text-gray-400 hover:bg-primary-bg hover:text-white"}`}
+              onClick={toggleStaked}
+            >
+              <FaTrophy />
+              Stake and Play
+            </Button>
+          </div>
         </div>
       </div>
-      <div className="w-full h-[300px] overflow-y-auto custom-scrollbar">
+      <div className="w-full h-[300px] overflow-y-auto custom-scrollbar bg-primary-bg/10 rounded-lg">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className=" sticky top-0 z-10">Player rank</TableHead>
-              <TableHead className=" sticky top-0 z-10">Wallet address</TableHead>
-              <TableHead className=" sticky top-0 z-10">Games played</TableHead>
-              <TableHead className="sticky top-0 z-10">Total points</TableHead>
-              <TableHead className=" sticky top-0 z-10">Last game points</TableHead>
+            <TableRow className="bg-primary-bg/20">
+              <TableHead className="sticky top-0 z-10 text-white">Rank</TableHead>
+              <TableHead className="sticky top-0 z-10 text-white">Player</TableHead>
+              <TableHead className="sticky top-0 z-10 text-white">Games</TableHead>
+              <TableHead className="sticky top-0 z-10 text-white">Total Points</TableHead>
+              <TableHead className="sticky top-0 z-10 text-white">Last Game Points</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {currentData.map((data: RankedLeaderboardEntry) => (
               <TableRow 
                 key={data.address}
-                className={data.address.toLowerCase() === address?.toLowerCase() ? "bg-secondary-bg" : ""}
+                className={`transition-colors duration-200 hover:bg-primary-bg/5 ${data.address.toLowerCase() === address?.toLowerCase() ? "bg-primary-bg/20" : ""}`}
               >
-                <TableCell>{data.rank}</TableCell>
+                <TableCell className="font-medium">
+                  {data.rank <= 3 ? (
+                    <FaMedal className={`inline mr-2 ${data.rank === 1 ? "text-yellow-400" : data.rank === 2 ? "text-gray-400" : "text-yellow-600"}`} />
+                  ) : null}
+                  {data.rank}
+                </TableCell>
                 <TableCell>
-                  {data.address.toLowerCase() === address?.toLowerCase() ? "You" : truncateAddress(data.address)}
+                  {data.address.toLowerCase() === address?.toLowerCase() ? <span className="font-bold text-primary-bg">You</span> : truncateAddress(data.address)}
                 </TableCell>
                 <TableCell>{data.gamesPlayed}</TableCell>
-                <TableCell>{data.totalPoints}</TableCell>
+                <TableCell className="font-semibold">{data.totalPoints}</TableCell>
                 <TableCell>{data.lastGamePoints}</TableCell>
               </TableRow>
             ))}
@@ -100,13 +109,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
       </div>
 
       {!userEntry && (
-        <div className="w-full flex items-center gap-3 p-4 bg-yellow-500 bg-opacity-20 rounded-lg text-yellow-500 font-medium">
+        <div className="w-full flex items-center gap-3 p-4 bg-yellow-500 bg-opacity-20 rounded-lg text-yellow-500 font-medium transition-all duration-300 hover:bg-opacity-30">
           <MdSportsScore className="text-3xl" />
           <div>
             <p className="font-bold">Not on the leaderboard yet?</p>
             <p>Play a game and claim your spot among the champions!</p>
           </div>
-          <MdEmojiEvents className="text-3xl ml-auto" />
+          <MdEmojiEvents className="text-3xl ml-auto animate-pulse" />
         </div>
       )}
     </div>

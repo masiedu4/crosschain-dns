@@ -9,7 +9,7 @@ import { Address, stringToHex } from "viem";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
-import { FaKickstarter, FaClock, FaExclamationTriangle, FaGamepad, FaBolt } from "react-icons/fa";
+import { FaKickstarter, FaClock, FaExclamationTriangle, FaGamepad, FaBolt , FaHourglassHalf} from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 
 const SetGame = ({ onClose }: { onClose: () => void }) => {
@@ -98,28 +98,29 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
     <div
-      className="bg-black bg-opacity-50 absolute inset-0"
+      className="bg-black bg-opacity-50 absolute inset-0 backdrop-blur-sm"
       onClick={onClose}
     ></div>
-    <div className="justify-center w-[650px] border border-custom-border bg-secondary-bg p-6 rounded-[12px] flex flex-col items-start gap-8 relative z-10">
+    <div className="justify-center w-[650px] border border-custom-border bg-secondary-bg p-8 rounded-[16px] flex flex-col items-start gap-8 relative z-10 shadow-2xl">
       <div className="gap-6 flex-col flex items-start self-stretch">
         <div className="flex justify-between items-center self-stretch">
-          <p className="text-xl font-semibold flex items-center gap-2">
-            <FaGamepad className="text-yellow-400" />
-            Game setup
-          </p>
+          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+            <FaGamepad className="text-yellow-400 text-3xl" />
+            Game Setup
+          </h2>
           <button
             onClick={onClose}
-            className="text-white hover:text-secondary-text"
+            className="text-white hover:text-secondary-text transition-colors duration-200"
           >
-            <X />
+            <X className="h-6 w-6" />
           </button>
         </div>
 
-        <div className="flex flex-col items-start gap-4 self-stretch">
-          <div className="flex flex-col gap-1 self-stretch">
-            <p className="text-lg text-secondary-text font-medium">
-              Duration
+        <div className="flex flex-col items-start gap-4 self-stretch bg-primary-bg/10 p-6 rounded-lg">
+          <div className="flex flex-col gap-2 self-stretch">
+            <p className="text-lg text-white font-medium flex items-center gap-2">
+              <FaHourglassHalf className="text-blue-400" />
+              Game Duration
             </p>
             <Slider
               value={[duration]}
@@ -130,28 +131,31 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
               step={10}
               onValueChange={handleSliderChange}
             />
+            <p className="text-sm text-secondary-text text-center mt-2">
+              Selected duration: {duration} seconds
+            </p>
           </div>
         </div>
       </div>
 
-      {/* New section for game disclaimers */}
-      <div className="flex flex-col gap-5 text-lg text-white">
-        <div className="flex items-start gap-2">
-          <FaClock className="text-blue-400 mt-1 flex-shrink-0" />
+      <div className="flex flex-col gap-5 text-base text-white bg-primary-bg/5 p-6 rounded-lg">
+        <h3 className="text-lg font-semibold mb-2">Game Rules</h3>
+        <div className="flex items-start gap-3">
+          <FaClock className="text-blue-400 mt-1 flex-shrink-0 text-xl" />
           <p>Shorter durations provide more letters and potential words, increasing the challenge and excitement!</p>
         </div>
-        <div className="flex items-start gap-2">
-          <FaExclamationTriangle className="text-yellow-400 mt-1 flex-shrink-0" />
+        <div className="flex items-start gap-3">
+          <FaExclamationTriangle className="text-yellow-400 mt-1 flex-shrink-0 text-xl" />
           <p>Creating a game initiates a blockchain transaction. Ensure your wallet is connected and has sufficient funds.</p>
         </div>
-        <div className="flex items-start gap-2">
-          <FaBolt className="text-green-400 mt-1 flex-shrink-0" />
+        <div className="flex items-start gap-3">
+          <FaBolt className="text-green-400 mt-1 flex-shrink-0 text-xl" />
           <p>Each game is unique! The letter set changes every time, so be ready for a fresh challenge with each play.</p>
         </div>
       </div>
 
       <Button
-        className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
+        className="flex px-8 gap-3 mx-auto justify-center items-center h-12 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
         onClick={handleCreateGame}
         disabled={isSubmitting}
         onMouseEnter={() => setIsHovered(true)}
@@ -162,9 +166,9 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
         ) : (
           <>
             <FaKickstarter
-              className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+              className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300 text-xl`}
             />
-            <span className="text-base text-white">Create game</span>
+            <span className="text-lg text-white">Create Game</span>
           </>
         )}
       </Button>
