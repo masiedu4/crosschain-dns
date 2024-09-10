@@ -196,6 +196,8 @@ export async function fetchLatestStartGame(
       }
     }
 
+    
+
     // Find the latest start_game that hasn't ended
     for (const notice of notices) {
       const noticeTimestamp = parseInt(notice.input.timestamp);
@@ -212,6 +214,7 @@ export async function fetchLatestStartGame(
             latestStartGame = payloadJson;
             latestTimestamp = noticeTimestamp;
           }
+          
         } catch (error) {
           // Silently skip invalid payloads
           continue;

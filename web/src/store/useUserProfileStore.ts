@@ -12,6 +12,7 @@ const processGameHistory = (gameHistory: GameData[]): ProcessedGameRecord[] => {
     .map((game) => ({
       timestamp: game.timestamp,
       total_points: game.points_earned + game.bonus_points_earned,
+      is_staked: game.is_staked,
     }))
     .sort((a, b) => b.timestamp - a.timestamp);
 };

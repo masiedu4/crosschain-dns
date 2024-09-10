@@ -101,7 +101,7 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
       className="bg-black bg-opacity-50 absolute inset-0"
       onClick={onClose}
     ></div>
-    <div className="justify-center w-[500px] border border-custom-border bg-secondary-bg p-6 rounded-[12px] flex flex-col items-start gap-8 relative z-10">
+    <div className="justify-center w-[650px] border border-custom-border bg-secondary-bg p-6 rounded-[12px] flex flex-col items-start gap-8 relative z-10">
       <div className="gap-6 flex-col flex items-start self-stretch">
         <div className="flex justify-between items-center self-stretch">
           <p className="text-xl font-semibold flex items-center gap-2">
@@ -118,7 +118,7 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
 
         <div className="flex flex-col items-start gap-4 self-stretch">
           <div className="flex flex-col gap-1 self-stretch">
-            <p className="text-base text-secondary-text font-medium">
+            <p className="text-lg text-secondary-text font-medium">
               Duration
             </p>
             <Slider
@@ -135,7 +135,7 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
       </div>
 
       {/* New section for game disclaimers */}
-      <div className="flex flex-col gap-3 text-sm text-white">
+      <div className="flex flex-col gap-5 text-lg text-white">
         <div className="flex items-start gap-2">
           <FaClock className="text-blue-400 mt-1 flex-shrink-0" />
           <p>Shorter durations provide more letters and potential words, increasing the challenge and excitement!</p>

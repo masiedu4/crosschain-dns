@@ -18,6 +18,7 @@ export interface GameData {
   bonus_words_won: string[];
   points_earned: number;
   bonus_points_earned: number;
+  is_staked:boolean;
 }
 
 export interface GameResult extends GameData {
@@ -55,4 +56,5 @@ export interface RankedLeaderboardEntry extends LeaderboardEntry {
 export interface ProcessedGameRecord {
   timestamp: number;
   total_points: number;
+  is_staked: boolean;
 }

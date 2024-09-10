@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/table";
 import { RankedLeaderboardEntry } from "@/lib/types";
 import { truncateAddress } from "@/lib/utils";
-import { useAccount } from "wagmi";import { MdLeaderboard } from "react-icons/md";
+import { useAccount } from "wagmi";
+import { MdLeaderboard, MdSportsScore, MdEmojiEvents } from "react-icons/md";
 
 
 interface LeaderboardProps {
@@ -99,8 +100,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
       </div>
 
       {!userEntry && (
-        <div className="text-yellow-500">
-          You are not currently on the leaderboard. Play some games to appear here!
+        <div className="w-full flex items-center gap-3 p-4 bg-yellow-500 bg-opacity-20 rounded-lg text-yellow-500 font-medium">
+          <MdSportsScore className="text-3xl" />
+          <div>
+            <p className="font-bold">Not on the leaderboard yet?</p>
+            <p>Play a game and claim your spot among the champions!</p>
+          </div>
+          <MdEmojiEvents className="text-3xl ml-auto" />
         </div>
       )}
     </div>

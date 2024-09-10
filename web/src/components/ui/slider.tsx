@@ -15,7 +15,7 @@ const Slider = React.forwardRef<
         <span
           key={duration}
           className={cn(
-            "text-sm font-medium transition-colors",
+            "text-lg font-medium transition-colors",
             value[0] === duration ? "text-white" : "text-white"
           )}
         >

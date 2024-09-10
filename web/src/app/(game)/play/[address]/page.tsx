@@ -9,6 +9,7 @@ export default async function Page({
 }) {
   try {
     const gameData = await fetchLatestStartGame(params.address);
+    
 
     if (!gameData) {
   

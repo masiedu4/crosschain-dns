@@ -76,6 +76,9 @@ const Connected = ({ address }: { address: Address | undefined }) => {
                     <TableHead className="bg-secondary-bg sticky top-0">
                       Points
                     </TableHead>
+                    <TableHead className="bg-secondary-bg sticky top-0">
+                      Mode
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -86,6 +89,9 @@ const Connected = ({ address }: { address: Address | undefined }) => {
                       </TableCell>
                       <TableCell className="text-sm text-white">
                         {game.total_points}
+                      </TableCell>
+                      <TableCell className="text-sm text-white">
+                        {game.is_staked ? 'Staked' : 'Normal'}
                       </TableCell>
                     </TableRow>
                   ))}
