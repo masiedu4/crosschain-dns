@@ -2,6 +2,11 @@ import { Address } from "viem";
 import { dictionary } from "./dictionary";
 import { Leaderboard } from "./leaderboard";
 
+interface Transaction {
+  timestamp: number;
+  amount: number;
+}
+
 export interface GameData {
   type: string;
   game_id: number;
@@ -13,6 +18,7 @@ export interface GameData {
   bonus_words_won: string[];
   points_earned: number;
   bonus_points_earned: number;
+  is_staked: boolean;
 }
 
 interface InternalGameData extends GameData {
@@ -35,7 +41,14 @@ interface GameStats {
 }
 
 export class Player {
-  private stats: GameStats = {
+  private normalStats: GameStats = {
+    totalPoints: 0,
+    gamesPlayed: 0,
+    totalWordsWon: 0,
+    totalBonusWordsWon: 0,
+    lastGamePoints: 0,
+  };
+  private stakedStats: GameStats = {
     totalPoints: 0,
     gamesPlayed: 0,
     totalWordsWon: 0,
@@ -44,6 +57,9 @@ export class Player {
   };
   private gameHistory: GameData[] = [];
   private currentGame: InternalGameData | null = null;
+  private stakeStatus: boolean = true;
+  private earnings: Transaction[] = [];
+  private withdrawals: Transaction[] = [];
   private gameResetTimer: NodeJS.Timeout | null = null;
 
   constructor(private readonly address: Address) {}
@@ -52,16 +68,62 @@ export class Player {
     return this.address;
   }
 
+  addEarning(amount: number): void {
+    this.earnings.push({
+      timestamp: Math.floor(Date.now() / 1000),
+      amount,
+    });
+  }
+
+  addWithdrawal(amount: number): void {
+    this.withdrawals.push({
+      timestamp: Math.floor(Date.now() / 1000),
+      amount,
+    });
+  }
+
+  getEarnings(): Transaction[] {
+    return [...this.earnings];
+  }
+
+  getWithdrawals(): Transaction[] {
+    return [...this.withdrawals];
+  }
+
+  getStakeStatus(): boolean {
+    return this.stakeStatus;
+  }
+
+  setStakeStatus(status: boolean): void {
+    this.stakeStatus = status;
+  }
+
   getTotalPoints(): number {
-    return this.stats.totalPoints;
+    return this.stakeStatus
+      ? this.stakedStats.totalPoints
+      : this.normalStats.totalPoints;
   }
 
   getGamesPlayed(): number {
-    return this.stats.gamesPlayed;
+    return this.stakeStatus
+      ? this.stakedStats.gamesPlayed
+      : this.normalStats.gamesPlayed;
   }
 
   getLastGamePoints(): number {
-    return this.stats.lastGamePoints;
+    return this.stakeStatus
+      ? this.stakedStats.lastGamePoints
+      : this.normalStats.lastGamePoints;
+  }
+
+  resetStakedPoints(): void {
+    this.stakedStats = {
+      totalPoints: 0,
+      gamesPlayed: 0,
+      totalWordsWon: 0,
+      totalBonusWordsWon: 0,
+      lastGamePoints: 0,
+    };
   }
 
   startGame(
@@ -79,7 +141,7 @@ export class Player {
       this.generateWordsAndScramble(duration);
 
     this.currentGame = {
-      type: "start_game",
+      type:"start_game",
       game_id,
       scrambled_letters,
       original_words: words,
@@ -90,6 +152,7 @@ export class Player {
       bonus_words_won: [],
       points_earned: 0,
       bonus_points_earned: 0,
+      is_staked: this.stakeStatus,
     };
 
     // Set a timer to reset the game after 5 minutes
@@ -101,12 +164,13 @@ export class Player {
     ); // 5 minutes in milliseconds
 
     return {
-      type: this.currentGame.type,
+      type:this.currentGame.type,
       game_id: this.currentGame.game_id,
       scrambled_letters: this.currentGame.scrambled_letters,
       timestamp: this.currentGame.timestamp,
       duration: this.currentGame.duration,
       is_ended: this.currentGame.is_ended,
+      is_staked: this.currentGame.is_staked,
     };
   }
 
@@ -145,11 +209,12 @@ export class Player {
     this.currentGame.points_earned = pointsEarned;
     this.currentGame.bonus_points_earned = bonusPointsEarned;
 
-    this.stats.totalPoints += totalPointsEarned;
-    this.stats.gamesPlayed++;
-    this.stats.totalWordsWon += wordsWon.length;
-    this.stats.totalBonusWordsWon += bonusWordsWon.length;
-    this.stats.lastGamePoints = totalPointsEarned;
+    const stats = this.stakeStatus ? this.stakedStats : this.normalStats;
+    stats.totalPoints += totalPointsEarned;
+    stats.gamesPlayed++;
+    stats.totalWordsWon += wordsWon.length;
+    stats.totalBonusWordsWon += bonusWordsWon.length;
+    stats.lastGamePoints = totalPointsEarned;
 
     const { sampleWords, additionalCount } = this.getSamplePossibleWords(
       this.currentGame.scrambled_letters,
@@ -166,9 +231,7 @@ export class Player {
     };
 
     this.gameHistory.push(this.currentGame);
-
     Leaderboard.updateLeaderboard();
-
     this.currentGame = null;
 
     return gameResult;
@@ -209,11 +272,13 @@ export class Player {
   }
 
   private calculateNormalPoints(wordCount: number): number {
-    return wordCount * 3;
+    const basePoints = wordCount * 3;
+    return this.stakeStatus ? basePoints * 2 : basePoints; // Double points for staked games
   }
 
   private calculateBonusPoints(bonusWordCount: number): number {
-    return bonusWordCount * 6;
+    const basePoints = bonusWordCount * 6;
+    return this.stakeStatus ? basePoints * 2 : basePoints; // Double points for staked games
   }
 
   private generateWordsAndScramble(duration: number): {
@@ -229,13 +294,13 @@ export class Player {
   private getWordCountForDuration(duration: number): number {
     switch (duration) {
       case 20:
-        return 4;
+        return 6;
       case 30:
-        return 3;
+        return 5;
       case 40:
-        return 3;
+        return 4;
       case 50:
-        return 2;
+        return 3;
       case 60:
         return 2;
       default:

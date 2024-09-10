@@ -2,7 +2,7 @@ import { createApp } from "@deroll/app";
 import { createRouter } from "@deroll/router";
 import { createWallet } from "@deroll/wallet";
 import { Leaderboard } from "./leaderboard";
-import { Address, hexToString, stringToHex } from "viem";
+import {  hexToString, stringToHex } from "viem";
 
 // create app
 const app = createApp({ url: "http://127.0.0.1:8080/host-runner" });
@@ -56,9 +56,15 @@ app.addAdvanceHandler(async (data) => {
 
           // fetch leaderboard
           const leaderboardPayload = {
-            type: "leaderboard",
-            data: Leaderboard.getLeaderboard(),
+            type: "normal_leaderboard",
+            data: Leaderboard.getNormalLeaderboard(),
           };
+
+          const stakedLeaderboardPayload = {
+            type:"staked_leaderboard",
+            data: Leaderboard.getStakedLeaderboard()
+          }
+          
 
           // fetch game history
           const gameHistory = {
@@ -75,13 +81,18 @@ app.addAdvanceHandler(async (data) => {
           });
 
           await app.createNotice({
+            payload: stringToHex(JSON.stringify(stakedLeaderboardPayload)),
+          });
+
+          await app.createNotice({
             payload: stringToHex(JSON.stringify(gameHistory)),
           });
 
           console.log(
             "Game ended successfully with statistics",
             gameStatistics,
-            Leaderboard.getLeaderboard()
+            Leaderboard.getNormalLeaderboard(),
+            Leaderboard.getStakedLeaderboard()
           );
         } catch (error) {}
 

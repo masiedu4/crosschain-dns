@@ -4,7 +4,8 @@ import { GameData } from "./player";
 
 export class Leaderboard {
   static players: Map<string, Player> = new Map();
-  private static leaderboard: LeaderboardEntry[] = [];
+  private static normalLeaderboard: LeaderboardEntry[] = [];
+  private static stakedLeaderboard: LeaderboardEntry[] = [];
 
   static getOrCreatePlayer(address: Address): Player {
     const key = address.toLowerCase();
@@ -18,11 +19,21 @@ export class Leaderboard {
 
   static updateLeaderboard(): void {
     const allPlayers = Array.from(this.players.values());
-    
-    this.leaderboard = this.createLeaderboardForPlayers(allPlayers);
+
+    // Update normal leaderboard
+    this.normalLeaderboard = this.createLeaderboardForPlayers(
+      allPlayers.filter((player) => !player.getStakeStatus())
+    );
+
+    // Update staked leaderboard
+    this.stakedLeaderboard = this.createLeaderboardForPlayers(
+      allPlayers.filter((player) => player.getStakeStatus())
+    );
   }
 
-  private static createLeaderboardForPlayers(players: Player[]): LeaderboardEntry[] {
+  private static createLeaderboardForPlayers(
+    players: Player[]
+  ): LeaderboardEntry[] {
     return players
       .map((player) => ({
         address: player.getAddress(),
@@ -33,8 +44,12 @@ export class Leaderboard {
       .sort((a, b) => b.totalPoints - a.totalPoints);
   }
 
-  static getLeaderboard(): LeaderboardEntry[] {
-    return this.leaderboard;
+  static getNormalLeaderboard(): LeaderboardEntry[] {
+    return this.normalLeaderboard;
+  }
+
+  static getStakedLeaderboard(): LeaderboardEntry[] {
+    return this.stakedLeaderboard;
   }
 
   static getPlayerRank(address: Address): number {
@@ -42,7 +57,10 @@ export class Leaderboard {
     if (!player) {
       throw new Error(`No player found with address ${address}`);
     }
-    return this.leaderboard.findIndex((entry) => entry.address === address) + 1;
+    const leaderboard = player.getStakeStatus()
+      ? this.stakedLeaderboard
+      : this.normalLeaderboard;
+    return leaderboard.findIndex((entry) => entry.address === address) + 1;
   }
 
   static getPlayerGameHistory(address: Address): GameData[] {
