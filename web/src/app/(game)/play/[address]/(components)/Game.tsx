@@ -189,17 +189,17 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
       <Dialog open={true} onOpenChange={() => {}}>
         <DialogContent className="sm:max-w-[425px] bg-secondary-bg border border-custom-border">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
+            <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
               <FaExclamationTriangle className="text-red-500" />
               Attempt Exhausted
             </DialogTitle>
             <DialogDescription>
               <div className="pt-4 text-white">
-                <p className="mb-4 text-base">
+                <p className="mb-4 text-lg">
                   You have already attempted this game. Unfortunately, you
                   cannot play this game again.
                 </p>
-                <p className="mb-4 text-base">
+                <p className="mb-4 text-lg">
                   But don't worry! There are always new challenges waiting for
                   you.
                 </p>
@@ -300,7 +300,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
             Game Over
           </DialogTitle>
           <DialogDescription>
-            <div className="pt-4 text-white">
+            <div className="pt-4 text-white text-lg">
               <p className="mb-4">
                 Your time is up! Are you ready to see how well you did?
               </p>

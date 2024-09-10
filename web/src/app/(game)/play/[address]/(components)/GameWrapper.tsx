@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Game from "./Game";
 import { useState } from "react";
-import { FaKeyboard, FaClock, FaStar, FaTrophy, FaGamepad, FaPlus, FaInfoCircle } from "react-icons/fa";
+import { FaKeyboard, FaClock, FaStar, FaTrophy, FaGamepad, FaPlus, FaInfoCircle, FaCoins } from "react-icons/fa";
 import { IoMdRefresh } from "react-icons/io";
 import { useRouter } from 'next/navigation';
 import { TbSquareLetterAFilled } from "react-icons/tb";
@@ -50,13 +50,13 @@ const GameWrapper: React.FC<GameDataNullable> = ({
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-      <div className="w-[600px] flex flex-col justify-center p-6 border rounded-[12px] gap-6 border-custom-border bg-secondary-bg">
+      <div className="w-[650px] flex flex-col justify-center p-6 border rounded-[12px] gap-6 border-custom-border bg-secondary-bg">
         <div className="flex  gap-2 items-center self-stretch">
           <FaCircleInfo className="w-6 text-yellow-400" />
           <p className="text-white text-xl font-semibold">Game Rules</p>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex  text-lg flex-col gap-5">
           <div className="flex items-start gap-4">
             {is_staked ? (
               <FaTrophy className="text-2xl text-yellow-400 mt-1" />
@@ -85,16 +85,23 @@ const GameWrapper: React.FC<GameDataNullable> = ({
           </div>
 
           <div className="flex items-start gap-4">
+          <FaCoins className="text-2xl text-green-400 mt-1" />
+          <p className="text-white">
+            Earn 3 points for each word you form. Special words from the original set earn 6 bonus points each!
+          </p>
+        </div>
+
+          <div className="flex items-start gap-4">
             <FaStar className="text-2xl text-green-400 mt-1" />
             <p className="text-white">
-              Bonus points are awarded for finding special words. Keep an eye out for these high-value targets!
+            Look out for the special words! They're hidden in the scrambled letters and worth double points.
             </p>
           </div>
 
           <div className="flex items-start gap-4">
             <IoMdRefresh className="text-2xl text-purple-400 mt-1" />
             <p className="text-white">
-              You can shuffle the letters at any time if you're stuck. This might help you see new word possibilities.
+            Stuck? You can shuffle the letters anytime to see new word possibilities.
             </p>
           </div>
 
