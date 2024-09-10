@@ -57,7 +57,7 @@ export class Player {
   };
   private gameHistory: GameData[] = [];
   private currentGame: InternalGameData | null = null;
-  private stakeStatus: boolean = true;
+  private stakeStatus: boolean = false;
   private earnings: Transaction[] = [];
   private withdrawals: Transaction[] = [];
   private gameResetTimer: NodeJS.Timeout | null = null;

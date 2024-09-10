@@ -83,7 +83,6 @@ export async function fetchNoticeByGameId(
       try {
         const payloadJson = JSON.parse(hexToString(notice.payload));
         if (payloadJson.game_id === gameId && payloadJson.is_ended === true) {
-        
           return payloadJson;
         }
       } catch (error) {
@@ -99,7 +98,7 @@ export async function fetchNoticeByGameId(
 
 // fetch leaderboard
 
-export async function fetchLatestLeaderboard(): Promise<any | null> {
+export async function fetchLatestNormalLeaderboard(): Promise<any | null> {
   try {
     const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
     const result = await fetchNotices();
@@ -117,7 +116,41 @@ export async function fetchLatestLeaderboard(): Promise<any | null> {
       if (noticeTimestamp <= currentTime && noticeTimestamp > latestTimestamp) {
         try {
           const payloadJson = JSON.parse(hexToString(notice.payload));
-          if (payloadJson.type === "leaderboard") {
+          if (payloadJson.type === "normal_leaderboard") {
+            latestLeaderboard = payloadJson;
+            latestTimestamp = noticeTimestamp;
+          }
+        } catch (error) {
+          console.error("Error parsing payload:", error);
+        }
+      }
+    }
+
+    return latestLeaderboard;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function fetchLatestStakedLeaderboard(): Promise<any | null> {
+  try {
+    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    const result = await fetchNotices();
+    const notices = result?.data.notices.edges.map((edge) => edge.node);
+
+    if (!notices) {
+      return null;
+    }
+
+    let latestLeaderboard = null;
+    let latestTimestamp = 0;
+
+    for (const notice of notices) {
+      const noticeTimestamp = parseInt(notice.input.timestamp);
+      if (noticeTimestamp <= currentTime && noticeTimestamp > latestTimestamp) {
+        try {
+          const payloadJson = JSON.parse(hexToString(notice.payload));
+          if (payloadJson.type === "staked_leaderboard") {
             latestLeaderboard = payloadJson;
             latestTimestamp = noticeTimestamp;
           }
@@ -241,7 +274,6 @@ export async function fetchLatestEndGame(
 export async function fetchLatestGameHistory(
   msgSender: string
 ): Promise<GameData[] | null> {
-
   try {
     const currentTime = Math.floor(Date.now() / 1000);
 
@@ -263,7 +295,6 @@ export async function fetchLatestGameHistory(
         noticeTimestamp <= currentTime &&
         noticeTimestamp > latestTimestamp
       ) {
-
         try {
           const decodedPayload = hexToString(notice.payload);
 
