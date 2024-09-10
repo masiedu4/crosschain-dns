@@ -46,11 +46,17 @@ const Navbar = () => {
               Home
             </DropdownMenuItem>
           </Link>
+          <Link href={`/stake/${address}`}>
+            <DropdownMenuItem className=" text-white px-4 hover:bg-primary-bg cursor-pointer ">
+              Stake
+            </DropdownMenuItem>
+          </Link>
           <Link href={`/play/${address}`}>
             <DropdownMenuItem className=" text-white px-4 hover:bg-primary-bg cursor-pointer ">
               Current game
             </DropdownMenuItem>
           </Link>
+         
         </DropdownMenuContent>
       </DropdownMenu>
       <Image src={logoImg} alt="logo" width={150} height={80} priority />
