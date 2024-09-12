@@ -2,7 +2,7 @@ import { createApp } from "@deroll/app";
 import { createRouter } from "@deroll/router";
 import { createWallet } from "@deroll/wallet";
 import { Leaderboard } from "./leaderboard";
-import {  hexToString, stringToHex } from "viem";
+import { Address, hexToString, stringToHex } from "viem";
 
 // create app
 const app = createApp({ url: "http://127.0.0.1:8080/host-runner" });
@@ -13,6 +13,14 @@ const wallet = createWallet();
 const router = createRouter({ app });
 
 let gameId: number = 1;
+
+router.add<{ address: Address }>(
+  "balance/:address",
+  ({ params: { address } }) => {
+    const balance = wallet.erc20BalanceOf("0x", address);
+    return balance.toString();
+  }
+);
 
 app.addAdvanceHandler(wallet.handler);
 app.addInspectHandler(router.handler);
@@ -61,10 +69,9 @@ app.addAdvanceHandler(async (data) => {
           };
 
           const stakedLeaderboardPayload = {
-            type:"staked_leaderboard",
-            data: Leaderboard.getStakedLeaderboard()
-          }
-          
+            type: "staked_leaderboard",
+            data: Leaderboard.getStakedLeaderboard(),
+          };
 
           // fetch player profile
           const playerProfile = {
@@ -87,8 +94,6 @@ app.addAdvanceHandler(async (data) => {
           await app.createNotice({
             payload: stringToHex(JSON.stringify(playerProfile)),
           });
-
-       
         } catch (error) {}
 
       default:

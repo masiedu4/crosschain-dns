@@ -270,7 +270,6 @@ export async function fetchLatestEndGame(
 }
 
 // most recent  game history for msg.sender
-
 export async function fetchPlayerProfile(
   msgSender: string
 ): Promise<PlayerProfile | null> {
