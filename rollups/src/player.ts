@@ -161,13 +161,13 @@ export class Player {
       is_staked: this.stakeStatus,
     };
 
-    // Set a timer to reset the game after 5 minutes
-    this.gameResetTimer = setTimeout(
-      () => {
-        this.resetCurrentGame();
-      },
-      5 * 60 * 1000
-    ); // 5 minutes in milliseconds
+    // // Set a timer to reset the game after 5 minutes
+    // this.gameResetTimer = setTimeout(
+    //   () => {
+    //     this.resetCurrentGame();
+    //   },
+    //   5 * 60 * 1000
+    // ); // 5 minutes in milliseconds
 
     return {
       type: this.currentGame.type,
