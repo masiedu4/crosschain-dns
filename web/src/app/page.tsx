@@ -178,7 +178,7 @@ const App: React.FC = () => {
                 </Link>
       
               </div>
-              <p className="mt-8 text-sm text-blue-200 italic">Created with ❤️ and probably too much coffee by Michael Asiedu.</p>
+              <p className="mt-8 text-sm text-blue-200 italic">Created with ❤️ and probably too much coffee by Michael Asiedu and Fiifi The Boy.</p>
             </div>
           </div>
         </footer>

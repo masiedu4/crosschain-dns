@@ -213,8 +213,9 @@ export async function fetchLatestStartGame(
             latestTimestamp = noticeTimestamp;
           }
         } catch (error) {
-          // Silently skip invalid payloads
-          continue;
+
+          throw error
+         
         }
       }
     }
