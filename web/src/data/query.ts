@@ -53,7 +53,7 @@ export async function fetchNotices(): Promise<NoticesResponse | null> {
       body: JSON.stringify({
         query: NOTICES_QUERY.loc?.source.body,
       }),
-      // cache: "no-store",
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -276,7 +276,22 @@ export async function fetchPlayerProfile(
   try {
     const currentTime = Math.floor(Date.now() / 1000);
 
-    const result = await fetchNotices();
+    const response = await fetch(graphQlServer, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: NOTICES_QUERY.loc?.source.body,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result: NoticesResponse = await response.json();
+
     const notices = result?.data.notices.edges.map((edge) => edge.node);
 
     if (!notices) {
