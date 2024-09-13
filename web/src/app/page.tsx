@@ -5,9 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { FaChartBar, FaCoins, FaRocket, FaBookOpen, FaCubes } from 'react-icons/fa';
-import { SiDiscord } from 'react-icons/si';
 import { FaXTwitter } from 'react-icons/fa6';
 import { TbSquareLetterAFilled } from 'react-icons/tb';
 
@@ -37,7 +35,7 @@ const App: React.FC = () => {
             <div className="text-center max-w-3xl">
               <h1 className="text-5xl font-bold mb-4 text-white">Master the Scramble.<br />Win Big Rewards.</h1>
               <p className="text-xl mb-8 text-blue-200">Test your word formation skills in a fast-paced, decentralized game where every move counts.</p>
-              <Link href="/play">
+              <Link href="/play" target='_blank'>
                 <Button 
                   className="flex mx-auto px-8 gap-2 justify-center items-center h-12 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
                   onMouseEnter={() => setIsHovered(true)}

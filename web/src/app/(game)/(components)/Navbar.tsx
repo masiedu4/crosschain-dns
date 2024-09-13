@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import logoImg from "./logo.png";
-import Help from "./Help";
 import Connector from "./Wallet";
 import Link from "next/link";
 
@@ -28,11 +27,11 @@ const Navbar = () => {
     <div className="flex justify-between px-16 py-8">
       <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
         <DropdownMenuTrigger asChild>
-          <div className="inline-flex p-3 items-center justify-center gap-1 rounded-full bg-[rgba(31,35,49,0.20)] backdrop-blur-[4px] cursor-pointer">
+          <div className="inline-flex p-3 items-center justify-center gap-1 rounded-full bg-[rgba(112,125,167,0.2)] backdrop-blur-[4px] cursor-pointer">
             {isMenuOpen ? (
-              <X className="rounded-full" />
+              <X className="text-white rounded-full" />
             ) : (
-              <Menu className="rounded-full" />
+              <Menu className="text-white rounded-full" />
             )}
           </div>
         </DropdownMenuTrigger>
@@ -56,13 +55,12 @@ const Navbar = () => {
               Current game
             </DropdownMenuItem>
           </Link>
-         
         </DropdownMenuContent>
       </DropdownMenu>
       <Image src={logoImg} alt="logo" width={150} height={80} priority />
       <div className="flex gap-2 items-center ">
         {" "}
-        <Help />
+        {/* <Help /> */}
         <Connector />{" "}
       </div>
     </div>

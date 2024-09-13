@@ -19,13 +19,14 @@ import { IoIosSend } from "react-icons/io";
 import { IoAddSharp } from "react-icons/io5";
 
 import { Shuffle } from "lucide-react";
-import { useWriteInputBoxAddInput } from "@/hooks/generated";
+import { useWriteInputBoxAddInput, useWatchInputBoxInputAddedEvent } from "@/hooks/generated";
 import { useToast } from "@/components/ui/use-toast";
 import { stringToHex } from "viem";
 import { useRouter } from "next/navigation";
 import { fetchNoticeByGameId } from "@/data/query";
 import { GameResult } from "@/lib/types";
 import ResultsModal from "./ResultsModal";
+import { useAccount } from "wagmi";
 
 type GameData = {
   game_id: number;
@@ -34,25 +35,21 @@ type GameData = {
 };
 
 const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
-  const { writeContractAsync, isPending, isSuccess } =
-    useWriteInputBoxAddInput();
-
+  const { writeContractAsync, isPending, isSuccess } = useWriteInputBoxAddInput();
+  const { address } = useAccount();
   const { toast } = useToast();
-
   const [isHovered, setIsHovered] = useState(false);
-
   const router = useRouter();
   const [letters, setLetters] = useState<string[]>([]);
   const [currentWord, setCurrentWord] = useState<string>("");
   const [words, setWords] = useState<string[]>([]);
   const [timeLeft, setTimeLeft] = useState<number>(duration);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
-  const [showExhaustedDialog, setShowExhaustedDialog] =
-    useState<boolean>(false);
+  const [showExhaustedDialog, setShowExhaustedDialog] = useState<boolean>(false);
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
   const [showResultsModal, setShowResultsModal] = useState(false);
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEventEmitted, setIsEventEmitted] = useState(false);
 
   useEffect(() => {
     const storedAttempt = localStorage.getItem(`gameAttempt_${game_id}`);
@@ -104,10 +101,71 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
+  const handleInputAdded = useCallback((logs: any[]) => {
+    const relevantLog = logs.find(log => log.args.sender === address);
+    if (relevantLog) {
+      setIsEventEmitted(true);
+      toast({
+        title: "Game input added",
+        description: "Your game input has been added to the blockchain.",
+        variant: "success",
+      });
+    }
+  }, [address, toast]);
+
+  useWatchInputBoxInputAddedEvent({
+    onLogs: handleInputAdded,
+  });
+
+  useEffect(() => {
+    if (isEventEmitted) {
+      const fetchGameResult = async () => {
+        toast({
+          title: "Fetching game results",
+          description: "Please wait...",
+          variant: "info",
+        });
+
+        // Wait for 5 seconds
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        try {
+          const result = await fetchNoticeByGameId(game_id);
+          if (result) {
+            toast({
+              title: `You scored ${result.bonus_points_earned + result.points_earned} points!`,
+              variant: "success",
+            });
+            localStorage.removeItem(`gameAttempt_${game_id}`);
+            setGameResult(result);
+            setShowResultsModal(true);
+          } else {
+            toast({
+              title: "Error",
+              description: "Could not find game results. Please try again later.",
+              variant: "warning",
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching game results:", error);
+          toast({
+            title: "Error",
+            description: "Failed to fetch game results. Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
+
+      fetchGameResult();
+    }
+  }, [isEventEmitted, game_id, toast]);
+
   const handleSubmit = async () => {
     const data = { operation: "end_game", wordsSubmitted: words };
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       await writeContractAsync({
@@ -117,38 +175,11 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
         ],
       });
 
-      
-
       toast({
         title: "Submitting answers",
         description: "Please hold on!",
         variant: "info",
       });
-
-      // Wait for a short period to allow the notice to be processed
-      await new Promise((resolve) => setTimeout(resolve, 10000));
-
-      // Fetch the notice for the current game
-      const result = await fetchNoticeByGameId(game_id);
-
-      setIsSubmitting(false)
-
-      if (result) {
-        toast({
-          title: `You scored ${result.bonus_points_earned + result.points_earned} points!`,
-          variant: "success",
-        });
-        localStorage.removeItem(`gameAttempt_${game_id}`)
-        setGameResult(result);
-        setShowResultsModal(true);
-        
-      } else {
-        toast({
-          title: "Error",
-          description: "Could not find game results. Please try again later.",
-          variant: "warning",
-        });
-      }
     } catch (error) {
       console.error("Error submitting game:", error);
       toast({
@@ -156,6 +187,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
         description: `${error}`,
         variant: "destructive",
       });
+      setIsSubmitting(false);
     }
   };
 
@@ -224,7 +256,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
 
   return (
     <div className="py-8 px-24 rounded-[12px] flex flex-col gap-[34px] border border-custom-border bg-secondary-bg">
-      <div className="flex flex-col items-center gap-4 self-stretch">
+          <div className="flex flex-col items-center gap-4 self-stretch">
         <div className="flex flex-col items-center gap-1">
           <p className="text-4xl text-white font-semibold">
             00:{timeLeft.toString().padStart(2, "0")}
@@ -291,7 +323,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
           </div>
         </div>
       </div>
-
+      
       <Dialog open={gameEnded && !showResultsModal} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-[600px] bg-secondary-bg border border-custom-border">
         <DialogHeader>

@@ -88,7 +88,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
             {currentData.map((data: RankedLeaderboardEntry) => (
               <TableRow 
                 key={data.address}
-                className={`transition-colors duration-200 hover:bg-primary-bg/5 ${data.address.toLowerCase() === address?.toLowerCase() ? "bg-primary-bg/20" : ""}`}
+                className={`text-white transition-colors duration-200 hover:bg-primary-bg/5 ${data.address.toLowerCase() === address?.toLowerCase() ? "bg-primary-bg/20" : ""}`}
               >
                 <TableCell className="font-medium">
                   {data.rank <= 3 ? (
