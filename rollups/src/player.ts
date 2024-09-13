@@ -307,15 +307,11 @@ export class Player {
 
   private getWordCountForDuration(duration: number): number {
     switch (duration) {
-      case 20:
-        return 6;
-      case 30:
-        return 5;
       case 40:
         return 4;
-      case 50:
-        return 3;
       case 60:
+        return 3;
+      case 80:
         return 2;
       default:
         throw new Error("Invalid duration");

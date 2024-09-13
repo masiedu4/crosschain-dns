@@ -53,7 +53,7 @@ export async function fetchNotices(): Promise<NoticesResponse | null> {
       body: JSON.stringify({
         query: NOTICES_QUERY.loc?.source.body,
       }),
-      cache: "no-store",
+      // cache: "no-store",
     });
 
     if (!response.ok) {

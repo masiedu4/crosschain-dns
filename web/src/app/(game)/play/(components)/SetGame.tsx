@@ -18,10 +18,10 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
   const { address } = useAccount();
   const { toast } = useToast();
   const router = useRouter();
-  const { writeContractAsync, isPending, isSuccess } =
+  const { writeContractAsync, isSuccess } =
     useWriteInputBoxAddInput();
   const [duration, setDuration] = useState(20);
-  const durations = [20, 30, 40, 50, 60];
+  const durations = [ 40, 60, 80];
 
   const handleSliderChange = (value: number[]) => {
     setDuration(value[0]);
@@ -125,10 +125,10 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
             <Slider
               value={[duration]}
               durations={durations}
-              defaultValue={[30]}
-              max={60}
-              min={20}
-              step={10}
+              defaultValue={[40]}
+              max={80}
+              min={40}
+              step={20}
               onValueChange={handleSliderChange}
             />
             <p className="text-sm text-secondary-text text-center mt-2">

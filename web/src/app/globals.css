@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 
-body {
+.game {
   background-image: url('../public/images/bg.png');
   background-size: cover;
   background-position: center;

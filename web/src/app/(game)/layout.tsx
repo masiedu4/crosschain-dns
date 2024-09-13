@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 export default async function GameLayout(props: { children: ReactNode }) {
   return (
-    <main>
+    <main className="game">
       <Navbar />
       {props.children}
       <Toaster />

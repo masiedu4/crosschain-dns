@@ -8,6 +8,7 @@ import {
 } from "../lib/types";
 import { fetchPlayerProfile } from "@/data/query";
 
+
 const processGameHistory = (gameHistory: GameData[]): ProcessedGameRecord[] => {
   return gameHistory
     .map((game) => ({
