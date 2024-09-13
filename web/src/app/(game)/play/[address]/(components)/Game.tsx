@@ -277,7 +277,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
 
       <div className="flex flex-col items-center gap-4 self-stretch ">
         <div className="w-full flex items-start justify-center gap-2">
-          <div className="bg-[#1F2331] rounded-md w-64 h-10 border border-custom-border py-[7px] px-2 min-w-[100px] text-center uppercase">
+          <div className="bg-[#1F2331] text-white rounded-md w-64 h-10 border border-custom-border py-[7px] px-2 min-w-[100px] text-center uppercase">
             {currentWord}
           </div>
           <Button
