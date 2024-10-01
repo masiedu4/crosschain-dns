@@ -4,9 +4,9 @@
     "description": "Deroll application template",
     "main": "src/index.ts",
     "dependencies": {
-        "@deroll/app": "^0.7.0",
-        "@deroll/router": "^0.5.0",
-        "@deroll/wallet": "^0.8.0",
+        "@deroll/app": "^0.7.1",
+        "@deroll/router": "^0.5.1",
+        "@deroll/wallet": "^0.8.1",
         "abitype": "^1.0.5",
         "viem": "^2.17.9"
     },
@@ -21,7 +21,7 @@
     "scripts": {
         "build": "esbuild ./src/index.ts --bundle --outfile=dist/index.js --platform=node --target=node20",
         "clean": "rm -rf node_modules && rm -rf dist",
-        "dev": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:8080/host-runner\" ts-node src/index.ts",
+        "dev": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\" ts-node src/index.ts",
         "test": "vitest"
     },
     "keywords": [

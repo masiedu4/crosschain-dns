@@ -5,7 +5,7 @@ import { Leaderboard } from "./leaderboard";
 import { Address, hexToString, stringToHex } from "viem";
 
 // create app
-const app = createApp({ url: "http://127.0.0.1:8080/host-runner" });
+const app = createApp({ url: "http://127.0.0.1:5004" });
 
 // create wallet
 const wallet = createWallet();
@@ -30,6 +30,9 @@ app.addAdvanceHandler(async (data) => {
   const payload = data.payload;
 
   const player = Leaderboard.getOrCreatePlayer(sender);
+
+
+  
 
   try {
     const { operation, duration, wordsSubmitted } = JSON.parse(
