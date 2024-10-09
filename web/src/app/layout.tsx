@@ -13,7 +13,7 @@ const inter = Figtree({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Milky Adverb',
-  description: 'Cross-chain word game',
+  description: 'Decentralized word game, built on Cartesi Rollups.',
 }
 
 export default function RootLayout(props: { children: ReactNode }) {

@@ -12,14 +12,20 @@ import {
   FaBackspace,
   FaHourglassEnd,
   FaExclamationTriangle,
-  FaRedo, FaPaperPlane, FaLock, FaFont
+  FaRedo,
+  FaPaperPlane,
+  FaLock,
+  FaFont,
 } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 import { IoIosSend } from "react-icons/io";
 import { IoAddSharp } from "react-icons/io5";
 
 import { Shuffle } from "lucide-react";
-import { useWriteInputBoxAddInput, useWatchInputBoxInputAddedEvent } from "@/hooks/generated";
+import {
+  useWriteInputBoxAddInput,
+  useWatchInputBoxInputAddedEvent,
+} from "@/hooks/generated";
 import { useToast } from "@/components/ui/use-toast";
 import { stringToHex } from "viem";
 import { useRouter } from "next/navigation";
@@ -35,7 +41,8 @@ type GameData = {
 };
 
 const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
-  const { writeContractAsync, isPending, isSuccess } = useWriteInputBoxAddInput();
+  const { writeContractAsync, isPending, isSuccess } =
+    useWriteInputBoxAddInput();
   const { address } = useAccount();
   const { toast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
@@ -45,7 +52,8 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
   const [words, setWords] = useState<string[]>([]);
   const [timeLeft, setTimeLeft] = useState<number>(duration);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
-  const [showExhaustedDialog, setShowExhaustedDialog] = useState<boolean>(false);
+  const [showExhaustedDialog, setShowExhaustedDialog] =
+    useState<boolean>(false);
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
   const [showResultsModal, setShowResultsModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,17 +109,20 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
-  const handleInputAdded = useCallback((logs: any[]) => {
-    const relevantLog = logs.find(log => log.args.sender === address);
-    if (relevantLog) {
-      setIsEventEmitted(true);
-      toast({
-        title: "Game input added",
-        description: "Your game input has been added to the blockchain.",
-        variant: "success",
-      });
-    }
-  }, [address, toast]);
+  const handleInputAdded = useCallback(
+    (logs: any[]) => {
+      const relevantLog = logs.find((log) => log.args.sender === address);
+      if (relevantLog) {
+        setIsEventEmitted(true);
+        toast({
+          title: "Game input added",
+          description: "Your game input has been added to the blockchain.",
+          variant: "success",
+        });
+      }
+    },
+    [address, toast]
+  );
 
   useWatchInputBoxInputAddedEvent({
     onLogs: handleInputAdded,
@@ -127,7 +138,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
         });
 
         // Wait for 5 seconds
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise((resolve) => setTimeout(resolve, 5000));
 
         try {
           const result = await fetchNoticeByGameId(game_id);
@@ -142,7 +153,8 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
           } else {
             toast({
               title: "Error",
-              description: "Could not find game results. Please try again later.",
+              description:
+                "Could not find game results. Please try again later.",
               variant: "warning",
             });
           }
@@ -241,9 +253,11 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
                   onMouseLeave={() => setIsHovered(false)}
                   className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
                 >
-                  <IoAddSharp className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}/>
+                  <IoAddSharp
+                    className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+                  />
                   <span className="text-white  text-base font-semibold">
-                  New game
+                    New game
                   </span>
                 </Button>
               </div>
@@ -256,7 +270,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
 
   return (
     <div className="py-8 px-24 rounded-[12px] flex flex-col gap-[34px] border border-custom-border bg-secondary-bg">
-          <div className="flex flex-col items-center gap-4 self-stretch">
+      <div className="flex flex-col items-center gap-4 self-stretch">
         <div className="flex flex-col items-center gap-1">
           <p className="text-4xl text-white font-semibold">
             00:{timeLeft.toString().padStart(2, "0")}
@@ -323,67 +337,72 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
           </div>
         </div>
       </div>
-      
+
       <Dialog open={gameEnded && !showResultsModal} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-[600px] bg-secondary-bg border border-custom-border">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
-            <FaHourglassEnd className="text-yellow-400" />
-            Game Over
-          </DialogTitle>
-          <DialogDescription>
-            <div className="pt-4 text-white text-lg">
-              <p className="mb-4">
-                Your time is up! Are you ready to see how well you did?
-              </p>
-              <div className="flex flex-col gap-4 mt-6">
-                <div className="flex items-start gap-4">
-                  <FaFont className="text-2xl text-green-400 mt-1" />
-                  <p className="text-white">
-                    You formed {words.length} words in this game.
-                  </p>
+        <DialogContent className="sm:max-w-[600px] bg-secondary-bg border border-custom-border">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
+              <FaHourglassEnd className="text-yellow-400" />
+              Game Over
+            </DialogTitle>
+            <DialogDescription>
+              <div className="pt-4 text-white text-lg">
+                <p className="mb-4">
+                  Your time is up! Are you ready to see how well you did?
+                </p>
+                <div className="flex flex-col gap-4 mt-6">
+                  <div className="flex items-start gap-4">
+                    <FaFont className="text-2xl text-green-400 mt-1" />
+                    <p className="text-white">
+                      You formed {words.length} words in this game.
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <FaRedo className="text-2xl text-red-400 mt-1" />
+                    <p className="text-white">
+                      This game cannot be attempted again.
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <FaPaperPlane className="text-2xl text-blue-400 mt-1" />
+                    <p className="text-white">
+                      Submission will send a transaction that ends this game and
+                      computes results.
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <FaLock className="text-2xl text-yellow-400 mt-1" />
+                    <p className="text-white">
+                      If this game is not submitted or the page is refreshed,
+                      you will not be able to create any other game for the next
+                      5 minutes.
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <FaRedo className="text-2xl text-red-400 mt-1" />
-                  <p className="text-white">
-                    This game cannot be attempted again.
-                  </p>
-                </div>
-                <div className="flex items-start gap-4">
-                  <FaPaperPlane className="text-2xl text-blue-400 mt-1" />
-                  <p className="text-white">
-                    Submission will send a transaction that ends this game and computes results.
-                  </p>
-                </div>
-                <div className="flex items-start gap-4">
-                  <FaLock className="text-2xl text-yellow-400 mt-1" />
-                  <p className="text-white">
-                    If this game is not submitted or the page is refreshed, you will not be able to create any other game for the next 5 minutes.
-                  </p>
+                <div className="flex justify-center mt-6 gap-2">
+                  <Button
+                    className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="w-6 h-6 text-white animate-spin" />
+                    ) : (
+                      <>
+                        <IoIosSend
+                          className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}
+                        />
+                        <span className="text-white font-semibold">Submit</span>
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
-              <div className="flex justify-center mt-6 gap-2">
-                <Button
-                  className="flex px-6 gap-2 justify-center items-center h-10 bg-primary-bg hover:bg-primary-bg-hover text-white font-semibold rounded-full transition-all duration-300 ease-in-out transform hover:scale-105"
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                >
-               {isSubmitting ? (
-                    <Loader2 className="w-6 h-6 text-white animate-spin" />
-                  ) : (
-                    <>
-                      <IoIosSend className={`${isHovered ? "rotate-180" : ""} transition-transform duration-300`}/>
-                      <span className="text-white font-semibold">Submit</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
       </Dialog>
 
       {showResultsModal && gameResult && (
