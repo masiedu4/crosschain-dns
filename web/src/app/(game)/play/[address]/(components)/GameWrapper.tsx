@@ -3,19 +3,17 @@
 import { Button } from "@/components/ui/button";
 import Game from "./Game";
 import { useState } from "react";
-import { FaKeyboard, FaClock, FaStar, FaTrophy, FaGamepad, FaPlus, FaInfoCircle, FaCoins, FaBrain, FaChartLine } from "react-icons/fa";
+import { FaKeyboard, FaClock, FaStar, FaTrophy, FaGamepad, FaPlus, FaInfoCircle, FaCoins, FaBrain, FaChartLine, FaFont } from "react-icons/fa";
 import { IoMdRefresh } from "react-icons/io";
 import { useRouter } from 'next/navigation';
 import { TbSquareLetterAFilled } from "react-icons/tb";
 import { FaCircleInfo } from "react-icons/fa6";
 import { motion } from 'framer-motion';
 
-
 type GameDataNullable = {
   game_id: number | null;
   scrambled_letters: string | null;
   duration: number | null;
-
 };
 
 type GameData = {
@@ -29,8 +27,6 @@ const GameWrapper: React.FC<GameDataNullable> = ({
   game_id,
   scrambled_letters,
   duration,
-
-  
 }) => {
   const router = useRouter();
   const [gameStarted, setGameStarted] = useState(false);
@@ -39,7 +35,6 @@ const GameWrapper: React.FC<GameDataNullable> = ({
     game_id,
     scrambled_letters,
     duration,
-
   };
 
   const isGameDataValid = (data: GameDataNullable): data is GameData => {
@@ -107,6 +102,13 @@ const GameWrapper: React.FC<GameDataNullable> = ({
             </p>
           </div>
 
+          <div className="flex items-start gap-4">
+            <FaFont className="text-2xl text-purple-400 mt-1" />
+            <p className="text-white">
+              Only words between 3 and 7 letters are accepted. Challenge yourself to find the perfect word length!
+            </p>
+          </div>
+
         </div>
 
         <div className="flex justify-center mt-4">
@@ -126,9 +128,6 @@ const GameWrapper: React.FC<GameDataNullable> = ({
       </div>
     );
   };
-
-
-
 
   const NoGameCreated = () => {
     const router = useRouter();
@@ -203,8 +202,6 @@ const GameWrapper: React.FC<GameDataNullable> = ({
       </motion.div>
     );
   };
-
-
 
   return (
     <div className="w-[1000px] mx-auto flex flex-col p-20 gap-2 justify-center items-center">

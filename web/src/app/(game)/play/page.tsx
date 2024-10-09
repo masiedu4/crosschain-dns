@@ -21,7 +21,7 @@ export default async function Play() {
   } catch (error) {
     console.error("Error fetching or processing leaderboard data:", error);
     return (
-      <PlayContent error="Error loading leaderboard data. Please try again later." />
+      <PlayContent />
     );
   }
 }

@@ -9,7 +9,7 @@ import { Address, stringToHex } from "viem";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
-import { FaKickstarter, FaClock, FaExclamationTriangle, FaGamepad, FaBolt, FaHourglassHalf } from "react-icons/fa";
+import { FaKickstarter, FaClock, FaExclamationTriangle, FaGamepad, FaBolt, FaHourglassHalf, FaFont } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 
 const SetGame = ({ onClose }: { onClose: () => void }) => {
@@ -159,6 +159,10 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
           <div className="flex items-start gap-3">
             <FaBolt className="text-green-400 mt-1 flex-shrink-0 text-xl" />
             <p>Each game is unique! The letter set changes every time, so be ready for a fresh challenge with each play.</p>
+          </div>
+          <div className="flex items-start gap-3">
+            <FaFont className="text-purple-400 mt-1 flex-shrink-0 text-xl" />
+            <p>Only words between 3 and 7 letters are accepted. Challenge yourself to find the perfect word length!</p>
           </div>
         </div>
 

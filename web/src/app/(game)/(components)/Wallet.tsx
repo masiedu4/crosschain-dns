@@ -68,7 +68,7 @@ const Connected = ({ address }: { address: Address | undefined }) => {
         </Button>
       </div>
 
-      <USDCBalance balance={usdcBalance} />
+      {/* <USDCBalance balance={usdcBalance} /> */}
 
       <HistorySection
         title="Games Played"

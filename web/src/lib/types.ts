@@ -24,7 +24,7 @@ export interface GameData {
 export interface GameResult extends GameData {
   words_submitted: string[];
   original_words: string[];
-  sample_possible_words: string[];
+
   additional_possible_words_count: number;
 }
 

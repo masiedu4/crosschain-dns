@@ -80,10 +80,7 @@ const ResultsModal: React.FC<ResultsModalProps> = ({ gameResult, onClose }) => {
                 </div>
               ))}
             </div>
-            <p className="text-base text-white flex items-center gap-2">
-              <FaStar className="text-yellow-400" />
-              {gameResult.additional_possible_words_count + gameResult.sample_possible_words.length} more words were possible!
-            </p>
+         
           </div>
 
           <div className="flex gap-3 items-center justify-center bg-primary-bg/20 p-3 rounded-lg">

@@ -18,6 +18,7 @@ const config = {
       },
     },
     extend: {
+    
       boxShadow: {
         'custom': '0px 4px 8px 0px rgba(78, 106, 215, 0.20), 0px 2px 4px 0px rgba(78, 106, 215, 0.15), 0px 1px 2px 0px rgba(78, 106, 215, 0.10)',
       },
@@ -79,6 +80,7 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        'spin-slow': 'spin 3s linear infinite',
       },
     },
   },

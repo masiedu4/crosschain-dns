@@ -3,16 +3,15 @@ import { createRouter } from "@deroll/router";
 import { createWallet } from "@deroll/wallet";
 import { Leaderboard } from "./leaderboard";
 import { Address, hexToString, stringToHex } from "viem";
+import { Player, GameResult } from "./player";
 
-// create app
 const app = createApp({ url: "http://127.0.0.1:5004" });
-
-// create wallet
 const wallet = createWallet();
-
 const router = createRouter({ app });
 
 let gameId: number = 1;
+let totalGamesPlayed: number = 0;
+const playerCache = new Map<string, Player>();
 
 router.add<{ address: Address }>(
   "balance/:address",
@@ -29,78 +28,78 @@ app.addAdvanceHandler(async (data) => {
   const sender = data.metadata.msg_sender;
   const payload = data.payload;
 
-  const player = Leaderboard.getOrCreatePlayer(sender);
-
-
-  
+  let player = playerCache.get(sender);
+  if (!player) {
+    player = new Player(sender);
+    playerCache.set(sender, player);
+  }
 
   try {
     const { operation, duration, wordsSubmitted } = JSON.parse(
       hexToString(payload)
     );
+
     switch (operation) {
       case "start_game":
         const currentGame = player.startGame(gameId, duration);
-
         gameId++;
 
-        try {
-          const payload = JSON.stringify(currentGame);
-
-          await app.createNotice({
-            payload: stringToHex(payload),
-          });
-
-          console.log("Notice created successfully", payload);
-        } catch (noticeError) {
-          console.error("Error creating notice:", noticeError);
-        }
-
+        await app.createNotice({
+          payload: stringToHex(JSON.stringify(currentGame)),
+        });
         break;
 
       case "end_game":
-        const endGame = player.endGame(wordsSubmitted);
+        let endGame: GameResult;
+        try {
+          if (!player.hasActiveGame()) {
+            return Promise.resolve("reject");
+          }
+
+          endGame = player.endGame(wordsSubmitted);
+        } catch (endGameError) {
+          return Promise.resolve("reject");
+        }
+
+        totalGamesPlayed++;
+
+        // Combine game statistics and player profile
+
+        const gameAndProfileData = {
+          ...endGame,
+          playerProfile: player.getPlayerProfile(),
+        };
 
         try {
-          // update game state
-          const gameStatistics = JSON.stringify(endGame);
-
-          // fetch leaderboard
-          const leaderboardPayload = {
-            type: "normal_leaderboard",
-            data: Leaderboard.getNormalLeaderboard(),
-          };
-
-          const stakedLeaderboardPayload = {
-            type: "staked_leaderboard",
-            data: Leaderboard.getStakedLeaderboard(),
-          };
-
-          // fetch player profile
-          const playerProfile = {
-            type: "player_profile",
-            data: player.getPlayerProfile(),
-          };
-
           await app.createNotice({
-            payload: stringToHex(gameStatistics),
+            payload: stringToHex(JSON.stringify(gameAndProfileData)),
           });
+        } catch (noticeError) {
+          return Promise.resolve("reject");
+        }
 
-          await app.createNotice({
-            payload: stringToHex(JSON.stringify(leaderboardPayload)),
-          });
+        // Update leaderboards every 20 games
+        if (totalGamesPlayed % 20 === 0) {
+          try {
+            const leaderboardData = {
+              type: "leaderboard",
+              normalLeaderboard: Leaderboard.getNormalLeaderboard(),
+              stakedLeaderboard: Leaderboard.getStakedLeaderboard(),
+            };
 
-          await app.createNotice({
-            payload: stringToHex(JSON.stringify(stakedLeaderboardPayload)),
-          });
+            await app.createNotice({
+              payload: stringToHex(JSON.stringify(leaderboardData)),
+            });
+          } catch (leaderboardError) {
+            console.error(
+              "Error creating leaderboard notice:",
+              leaderboardError
+            );
+          }
+        }
 
-          await app.createNotice({
-            payload: stringToHex(JSON.stringify(playerProfile)),
-          });
-        } catch (error) {}
-
+        break;
       default:
-        console.log("Unknown operation:", operation);
         break;
     }
   } catch (error) {
@@ -110,5 +109,4 @@ app.addAdvanceHandler(async (data) => {
   return Promise.resolve("accept");
 });
 
-// start app
 app.start().catch((e) => process.exit(1));

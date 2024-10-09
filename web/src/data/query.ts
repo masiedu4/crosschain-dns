@@ -116,8 +116,8 @@ export async function fetchLatestNormalLeaderboard(): Promise<any | null> {
       if (noticeTimestamp <= currentTime && noticeTimestamp > latestTimestamp) {
         try {
           const payloadJson = JSON.parse(hexToString(notice.payload));
-          if (payloadJson.type === "normal_leaderboard") {
-            latestLeaderboard = payloadJson;
+          if (payloadJson.type === "leaderboard") {
+            latestLeaderboard = payloadJson.normalLeaderboard;
             latestTimestamp = noticeTimestamp;
           }
         } catch (error) {
@@ -150,8 +150,8 @@ export async function fetchLatestStakedLeaderboard(): Promise<any | null> {
       if (noticeTimestamp <= currentTime && noticeTimestamp > latestTimestamp) {
         try {
           const payloadJson = JSON.parse(hexToString(notice.payload));
-          if (payloadJson.type === "staked_leaderboard") {
-            latestLeaderboard = payloadJson;
+          if (payloadJson.type === "leaderboard") {
+            latestLeaderboard = payloadJson.stakedLeaderboard;
             latestTimestamp = noticeTimestamp;
           }
         } catch (error) {
@@ -315,8 +315,8 @@ export async function fetchPlayerProfile(
 
           const payloadJson = JSON.parse(decodedPayload);
 
-          if (payloadJson.type === "player_profile") {
-            playerProfile = payloadJson.data;
+          if (payloadJson.type === "end_game") {
+            playerProfile = payloadJson.playerProfile;
             latestTimestamp = noticeTimestamp;
           }
         } catch (error) {

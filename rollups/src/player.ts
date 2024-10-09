@@ -7,12 +7,6 @@ interface Transaction {
   amount: number;
 }
 
-interface PlayerProfile {
-  gameHistory: GameData[];
-  withdrawals: Transaction[];
-  earnings: Transaction[];
-}
-
 export interface GameData {
   type: string;
   game_id: number;
@@ -34,8 +28,8 @@ interface InternalGameData extends GameData {
 export interface GameResult extends GameData {
   words_submitted: string[];
   original_words: string[];
-  sample_possible_words: string[];
-  additional_possible_words_count: number;
+
+
 }
 
 interface GameStats {
@@ -46,15 +40,43 @@ interface GameStats {
   lastGamePoints: number;
 }
 
+class TrieNode {
+  children: Map<string, TrieNode> = new Map();
+  isEndOfWord: boolean = false;
+}
+
+class Trie {
+  root: TrieNode = new TrieNode();
+
+  insert(word: string): void {
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        node.children.set(char, new TrieNode());
+      }
+      node = node.children.get(char)!;
+    }
+    node.isEndOfWord = true;
+  }
+
+  search(word: string): boolean {
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children.has(char)) {
+        return false;
+      }
+      node = node.children.get(char)!;
+    }
+    return node.isEndOfWord;
+  }
+}
+
+// Initialize trie with dictionary words
+const dictionaryTrie = new Trie();
+dictionary.forEach((word) => dictionaryTrie.insert(word.toLowerCase()));
+
 export class Player {
-  private normalStats: GameStats = {
-    totalPoints: 0,
-    gamesPlayed: 0,
-    totalWordsWon: 0,
-    totalBonusWordsWon: 0,
-    lastGamePoints: 0,
-  };
-  private stakedStats: GameStats = {
+  private stats: GameStats = {
     totalPoints: 0,
     gamesPlayed: 0,
     totalWordsWon: 0,
@@ -64,9 +86,7 @@ export class Player {
   private gameHistory: GameData[] = [];
   private currentGame: InternalGameData | null = null;
   private stakeStatus: boolean = false;
-  private earnings: Transaction[] = [];
-  private withdrawals: Transaction[] = [];
-  private gameResetTimer: NodeJS.Timeout | null = null;
+  private transactions: Transaction[] = [];
 
   constructor(private readonly address: Address) {}
 
@@ -74,26 +94,15 @@ export class Player {
     return this.address;
   }
 
-  addEarning(amount: number): void {
-    this.earnings.push({
+  addTransaction(amount: number, isWithdrawal: boolean): void {
+    this.transactions.push({
       timestamp: Math.floor(Date.now() / 1000),
-      amount,
+      amount: isWithdrawal ? -amount : amount,
     });
   }
 
-  addWithdrawal(amount: number): void {
-    this.withdrawals.push({
-      timestamp: Math.floor(Date.now() / 1000),
-      amount,
-    });
-  }
-
-  getEarnings(): Transaction[] {
-    return [...this.earnings];
-  }
-
-  getWithdrawals(): Transaction[] {
-    return [...this.withdrawals];
+  getTransactions(): Transaction[] {
+    return [...this.transactions];
   }
 
   getStakeStatus(): boolean {
@@ -105,25 +114,19 @@ export class Player {
   }
 
   getTotalPoints(): number {
-    return this.stakeStatus
-      ? this.stakedStats.totalPoints
-      : this.normalStats.totalPoints;
+    return this.stats.totalPoints;
   }
 
   getGamesPlayed(): number {
-    return this.stakeStatus
-      ? this.stakedStats.gamesPlayed
-      : this.normalStats.gamesPlayed;
+    return this.stats.gamesPlayed;
   }
 
   getLastGamePoints(): number {
-    return this.stakeStatus
-      ? this.stakedStats.lastGamePoints
-      : this.normalStats.lastGamePoints;
+    return this.stats.lastGamePoints;
   }
 
-  resetStakedPoints(): void {
-    this.stakedStats = {
+  resetPoints(): void {
+    this.stats = {
       totalPoints: 0,
       gamesPlayed: 0,
       totalWordsWon: 0,
@@ -161,14 +164,6 @@ export class Player {
       is_staked: this.stakeStatus,
     };
 
-    // // Set a timer to reset the game after 5 minutes
-    // this.gameResetTimer = setTimeout(
-    //   () => {
-    //     this.resetCurrentGame();
-    //   },
-    //   5 * 60 * 1000
-    // ); // 5 minutes in milliseconds
-
     return {
       type: this.currentGame.type,
       game_id: this.currentGame.game_id,
@@ -184,74 +179,81 @@ export class Player {
     if (!this.currentGame) {
       throw new Error("No active game for this player");
     }
-
-    // Clear the game reset timer
-    if (this.gameResetTimer) {
-      clearTimeout(this.gameResetTimer);
-      this.gameResetTimer = null;
+  
+    try {
+      // Flatten and clean the submitted words array
+      const cleanedWords = wordsSubmitted
+        .flatMap((word) => word.split(/[,"\s]+/))
+        .filter((word) => word.length > 0);
+  
+      const wordsWon = this.verifyWords(
+        cleanedWords,
+        this.currentGame.scrambled_letters
+      );
+  
+      const bonusWordsWon = this.verifyWords(
+        cleanedWords,
+        this.currentGame.scrambled_letters,
+        new Set(this.currentGame.original_words)
+      );
+  
+      const pointsEarned = this.calculatePoints(
+        wordsWon.size - bonusWordsWon.size,
+        false
+      );
+      const bonusPointsEarned = this.calculatePoints(bonusWordsWon.size, true);
+      const totalPointsEarned = pointsEarned + bonusPointsEarned;
+  
+      // Update current game data
+      this.currentGame.is_ended = true;
+      this.currentGame.type = "end_game";
+      this.currentGame.words_won = Array.from(wordsWon);
+      this.currentGame.bonus_words_won = Array.from(bonusWordsWon);
+      this.currentGame.points_earned = pointsEarned;
+      this.currentGame.bonus_points_earned = bonusPointsEarned;
+  
+      // Update player stats
+      this.stats.totalPoints += totalPointsEarned;
+      this.stats.gamesPlayed++;
+      this.stats.totalWordsWon += wordsWon.size;
+      this.stats.totalBonusWordsWon += bonusWordsWon.size;
+      this.stats.lastGamePoints = totalPointsEarned;
+  
+      // Prepare game result
+      const gameResult: GameResult = {
+        ...this.currentGame,
+        words_submitted: cleanedWords,
+        original_words: this.currentGame.original_words,
+      };
+  
+      // Add to game history
+      this.gameHistory.push({ ...this.currentGame });
+  
+      // Update leaderboard
+      Leaderboard.updateLeaderboard();
+  
+      // Reset current game
+      this.currentGame = null;
+  
+      return gameResult;
+    } catch (error) {
+      // If an error occurs, ensure the current game is reset
+      this.currentGame = null;
+      throw error;
     }
-
-    const wordsWon = this.verifyWords(
-      wordsSubmitted,
-      dictionary,
-      this.currentGame.scrambled_letters
-    );
-    const bonusWordsWon = this.verifyWords(
-      wordsSubmitted,
-      this.currentGame.original_words,
-      this.currentGame.scrambled_letters
-    );
-
-    const pointsEarned = this.calculateNormalPoints(
-      wordsWon.length - bonusWordsWon.length
-    );
-    const bonusPointsEarned = this.calculateBonusPoints(bonusWordsWon.length);
-    const totalPointsEarned = pointsEarned + bonusPointsEarned;
-
-    this.currentGame.is_ended = true;
-    this.currentGame.type = "end_game";
-    this.currentGame.words_won = wordsWon;
-    this.currentGame.bonus_words_won = bonusWordsWon;
-    this.currentGame.points_earned = pointsEarned;
-    this.currentGame.bonus_points_earned = bonusPointsEarned;
-
-    const stats = this.stakeStatus ? this.stakedStats : this.normalStats;
-    stats.totalPoints += totalPointsEarned;
-    stats.gamesPlayed++;
-    stats.totalWordsWon += wordsWon.length;
-    stats.totalBonusWordsWon += bonusWordsWon.length;
-    stats.lastGamePoints = totalPointsEarned;
-
-    const { sampleWords, additionalCount } = this.getSamplePossibleWords(
-      this.currentGame.scrambled_letters,
-      dictionary,
-      5
-    );
-
-    const gameResult: GameResult = {
-      ...this.currentGame,
-      words_submitted: wordsSubmitted,
-      original_words: this.currentGame.original_words,
-      sample_possible_words: sampleWords,
-      additional_possible_words_count: additionalCount,
-    };
-
-    this.gameHistory.push(this.currentGame);
-    Leaderboard.updateLeaderboard();
-    this.currentGame = null;
-
-    return gameResult;
   }
 
   getGameHistory(): GameData[] {
     return this.gameHistory;
   }
 
-  getPlayerProfile(): PlayerProfile {
+  getPlayerProfile(): {
+    gameHistory: GameData[];
+    transactions: Transaction[];
+  } {
     return {
       gameHistory: this.gameHistory,
-      withdrawals: this.withdrawals,
-      earnings: this.earnings,
+      transactions: this.transactions,
     };
   }
 
@@ -275,24 +277,9 @@ export class Player {
     return this.currentGame !== null;
   }
 
-  private resetCurrentGame(): void {
-    if (this.currentGame) {
-      console.log(
-        `Game ${this.currentGame.game_id} has been reset due to timeout.`
-      );
-      this.currentGame = null;
-      this.gameResetTimer = null;
-    }
-  }
-
-  private calculateNormalPoints(wordCount: number): number {
-    const basePoints = wordCount * 3;
-    return this.stakeStatus ? basePoints * 2 : basePoints; // Double points for staked games
-  }
-
-  private calculateBonusPoints(bonusWordCount: number): number {
-    const basePoints = bonusWordCount * 6;
-    return this.stakeStatus ? basePoints * 2 : basePoints; // Double points for staked games
+  private calculatePoints(wordCount: number, isBonus: boolean): number {
+    const basePoints = wordCount * (isBonus ? 6 : 3);
+    return this.stakeStatus ? basePoints * 2 : basePoints;
   }
 
   private generateWordsAndScramble(duration: number): {
@@ -300,35 +287,33 @@ export class Player {
     scrambled_letters: string;
   } {
     const wordCount = this.getWordCountForDuration(duration);
-    const words = this.getRandomWords(dictionary, wordCount, 5, 8);
+    const words = this.getRandomWords(wordCount, 4, 8);
     const scrambled_letters = this.scrambleWords(words);
     return { words, scrambled_letters };
   }
 
   private getWordCountForDuration(duration: number): number {
-    switch (duration) {
-      case 40:
-        return 4;
-      case 60:
-        return 3;
-      case 80:
-        return 2;
-      default:
-        throw new Error("Invalid duration");
-    }
+    const durationMap: { [key: number]: number } = { 40: 4, 60: 3, 80: 2 };
+    const count = durationMap[duration];
+    if (!count) throw new Error("Invalid duration");
+    return count;
   }
 
   private getRandomWords(
-    wordList: string[],
     count: number,
     minLength: number,
     maxLength: number
   ): string[] {
-    const filteredWords = wordList.filter(
+    const filteredWords = dictionary.filter(
       (word) => word.length >= minLength && word.length <= maxLength
     );
-    const shuffled = [...filteredWords].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+    return Array.from(
+      { length: count },
+      () =>
+        filteredWords[
+          Math.floor(Math.random() * filteredWords.length)
+        ] as string
+    );
   }
 
   private scrambleWords(words: string[]): string {
@@ -341,76 +326,57 @@ export class Player {
 
   private verifyWords(
     submittedWords: string[],
-    wordList: string[],
-    scrambledLetters: string
-  ): string[] {
-    const wordSet = new Set(wordList.map((word) => word.toLowerCase()));
+    scrambledLetters: string,
+    bonusWords?: Set<string>
+  ): Set<string> {
     const availableLetters = this.getLetterCounts(scrambledLetters);
     const verifiedWords = new Set<string>();
 
-    submittedWords.forEach((word) => {
+    const words = submittedWords
+      .flatMap((word) => word.split(/[,"\s]+/))
+      .filter((word) => word.length > 0);
+
+    for (const word of words) {
       const lowercaseWord = word.toLowerCase();
-      if (wordSet.has(lowercaseWord) && !verifiedWords.has(lowercaseWord)) {
-        const wordLetters = this.getLetterCounts(lowercaseWord);
-        let isValid = true;
-        for (const [letter, count] of Object.entries(wordLetters)) {
-          if (!availableLetters[letter] || availableLetters[letter] < count) {
-            isValid = false;
-            break;
-          }
-        }
-        if (isValid) {
-          verifiedWords.add(lowercaseWord);
-        }
+      const isInDictionary = bonusWords
+        ? bonusWords.has(lowercaseWord)
+        : dictionaryTrie.search(lowercaseWord);
+
+      if (
+        isInDictionary &&
+        this.canFormWord(lowercaseWord, new Map(availableLetters))
+      ) {
+        verifiedWords.add(lowercaseWord);
       }
-    });
+    }
 
-    return Array.from(verifiedWords);
-  }
-  
-  private getSamplePossibleWords(
-    scrambledLetters: string,
-    wordList: string[],
-    sampleSize: number
-  ): { sampleWords: string[]; additionalCount: number } {
-    const allPossibleWords = this.findAllPossibleWords(
-      scrambledLetters,
-      wordList
-    );
-    const totalCount = allPossibleWords.length;
-
-    const shuffled = allPossibleWords.sort(() => 0.5 - Math.random());
-    const sampleWords = shuffled.slice(0, sampleSize);
-
-    return {
-      sampleWords,
-      additionalCount: Math.max(0, totalCount - sampleSize),
-    };
+    return verifiedWords;
   }
 
-  private findAllPossibleWords(
-    scrambledLetters: string,
-    wordList: string[]
-  ): string[] {
-    const availableLetters = this.getLetterCounts(scrambledLetters);
-    return wordList.filter((word) => {
-      const wordLetters = this.getLetterCounts(word);
-      for (const [letter, count] of Object.entries(wordLetters)) {
-        if (!availableLetters[letter] || availableLetters[letter] < count) {
-          return false;
-        }
+  private canFormWord(
+    word: string,
+    availableLetters: Map<string, number>
+  ): boolean {
+    const wordLetters = this.getLetterCounts(word);
+    for (const [letter, count] of wordLetters) {
+      if (
+        !availableLetters.has(letter) ||
+        availableLetters.get(letter)! < count
+      ) {
+        return false;
       }
-      return true;
-    });
+      availableLetters.set(letter, availableLetters.get(letter)! - count);
+    }
+    return true;
   }
 
-  private getLetterCounts(word: string): Record<string, number> {
-    return word.split("").reduce(
-      (acc, letter) => {
-        acc[letter] = (acc[letter] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+  private getLetterCounts(word: string): Map<string, number> {
+    return word.split("").reduce((acc, letter) => {
+      acc.set(letter, (acc.get(letter) || 0) + 1);
+      return acc;
+    }, new Map<string, number>());
   }
+
+
+ 
 }
