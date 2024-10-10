@@ -1,4 +1,4 @@
-export const graphQlServer = `http://localhost:8080/graphql`
-export const inspectAPI = `http://localhost:8080/inspect`
+export const graphQlServer = `https://milky-adverb.fly.dev/graphql`
+export const inspectAPI = `https://milky-adverb.fly.dev/inspect`
 
 

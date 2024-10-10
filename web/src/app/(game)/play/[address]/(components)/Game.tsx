@@ -182,7 +182,7 @@ const Game: React.FC<GameData> = ({ game_id, scrambled_letters, duration }) => {
     try {
       await writeContractAsync({
         args: [
-          "0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e",
+          "0x67Bd4A18e1648C479610A6c183c32CF881692330",
           stringToHex(JSON.stringify(data)),
         ],
       });

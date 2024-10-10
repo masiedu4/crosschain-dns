@@ -1,10 +1,10 @@
 import { http, cookieStorage, createConfig, createStorage } from "wagmi";
-import { anvil, baseSepolia, mainnet, sepolia } from "wagmi/chains";
+import { baseSepolia } from "wagmi/chains";
 import { coinbaseWallet, injected } from "wagmi/connectors";
 
 export function getConfig() {
   return createConfig({
-    chains: [mainnet, sepolia, anvil, baseSepolia],
+    chains: [baseSepolia],
     connectors: [
       injected(),
       coinbaseWallet(),
@@ -15,10 +15,9 @@ export function getConfig() {
     }),
     ssr: true,
     transports: {
-      [mainnet.id]: http(),
-      [sepolia.id]: http(),
-      [anvil.id]: http(),
-      [baseSepolia.id]: http(),
+      [baseSepolia.id]: http(
+        `https://base-sepolia.g.alchemy.com/v2/j0QBJFUm61nM6Uat4N1zup1QZ4TgbWG4`
+      ),
     },
   });
 }

@@ -4,12 +4,23 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
-import { useWriteInputBoxAddInput, useWatchInputBoxInputAddedEvent } from "@/hooks/generated";
+import {
+  useWriteInputBoxAddInput,
+  useWatchInputBoxInputAddedEvent,
+} from "@/hooks/generated";
 import { Address, stringToHex } from "viem";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useAccount } from "wagmi";
-import { FaKickstarter, FaClock, FaExclamationTriangle, FaGamepad, FaBolt, FaHourglassHalf, FaFont } from "react-icons/fa";
+import {
+  FaKickstarter,
+  FaClock,
+  FaExclamationTriangle,
+  FaGamepad,
+  FaBolt,
+  FaHourglassHalf,
+  FaFont,
+} from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 
 const SetGame = ({ onClose }: { onClose: () => void }) => {
@@ -27,17 +38,20 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
     setDuration(value[0]);
   };
 
-  const handleInputAdded = useCallback((logs: any[]) => {
-    const relevantLog = logs.find(log => log.args.sender === address);
-    if (relevantLog) {
-      setIsEventEmitted(true);
-      toast({
-        title: "Input Added",
-        description: "Your game input has been added to the blockchain.",
-        variant: "success",
-      });
-    }
-  }, [address, toast]);
+  const handleInputAdded = useCallback(
+    (logs: any[]) => {
+      const relevantLog = logs.find((log) => log.args.sender === address);
+      if (relevantLog) {
+        setIsEventEmitted(true);
+        toast({
+          title: "Input Added",
+          description: "Your game input has been added to the blockchain.",
+          variant: "success",
+        });
+      }
+    },
+    [address, toast]
+  );
 
   useWatchInputBoxInputAddedEvent({
     onLogs: handleInputAdded,
@@ -45,7 +59,7 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
 
   const handleCreateGame = async () => {
     const data = { operation: "start_game", duration: duration };
-  
+
     setIsSubmitting(true);
 
     if (address == undefined) {
@@ -67,7 +81,7 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
 
       await writeContractAsync({
         args: [
-          "0xab7528bb862fb57e8a2bcd567a2e929a0be56a5e" as Address,
+          "0x67Bd4A18e1648C479610A6c183c32CF881692330" as Address,
           stringToHex(JSON.stringify(data)),
         ],
       });
@@ -150,19 +164,31 @@ const SetGame = ({ onClose }: { onClose: () => void }) => {
           <h3 className="text-lg font-semibold mb-2">Game Rules</h3>
           <div className="flex items-start gap-3">
             <FaClock className="text-blue-400 mt-1 flex-shrink-0 text-xl" />
-            <p>Shorter durations provide more letters and potential words, increasing the challenge and excitement!</p>
+            <p>
+              Shorter durations provide more letters and potential words,
+              increasing the challenge and excitement!
+            </p>
           </div>
           <div className="flex items-start gap-3">
             <FaExclamationTriangle className="text-yellow-400 mt-1 flex-shrink-0 text-xl" />
-            <p>Creating a game initiates a blockchain transaction. Ensure your wallet is connected and has sufficient funds.</p>
+            <p>
+              Creating a game initiates a blockchain transaction. Ensure your
+              wallet is connected and has sufficient funds.
+            </p>
           </div>
           <div className="flex items-start gap-3">
             <FaBolt className="text-green-400 mt-1 flex-shrink-0 text-xl" />
-            <p>Each game is unique! The letter set changes every time, so be ready for a fresh challenge with each play.</p>
+            <p>
+              Each game is unique! The letter set changes every time, so be
+              ready for a fresh challenge with each play.
+            </p>
           </div>
           <div className="flex items-start gap-3">
             <FaFont className="text-purple-400 mt-1 flex-shrink-0 text-xl" />
-            <p>Only words between 3 and 7 letters are accepted. Challenge yourself to find the perfect word length!</p>
+            <p>
+              Only words between 3 and 7 letters are accepted. Challenge
+              yourself to find the perfect word length!
+            </p>
           </div>
         </div>
 
