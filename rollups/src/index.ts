@@ -78,8 +78,8 @@ app.addAdvanceHandler(async (data) => {
           return Promise.resolve("reject");
         }
 
-        // Update leaderboards every 20 games
-        if (totalGamesPlayed % 20 === 0) {
+        // Update leaderboards every 10 games
+        if (totalGamesPlayed % 10 === 0) {
           try {
             const leaderboardData = {
               type: "leaderboard",

@@ -107,7 +107,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({
         <MdInfo className="text-3xl" />
         <div>
           <p className="font-bold">Leaderboard Update</p>
-          <p>The leaderboard refreshes after every 20 games played.</p>
+          <p>The leaderboard refreshes after every 10 games played.</p>
         </div>
         <FaSync className="text-3xl ml-auto animate-spin-slow" />
       </div>
